@@ -29,7 +29,7 @@
                 display: flex;
                 flex-direction: row;
                 overflow: hidden;
-                background-color: #111827;
+                background-color: #EFE9DA;
                 box-sizing: border-box;
             }
             .hero-panel {
@@ -81,7 +81,7 @@
                     </div>
                     <div class="header_account_list">
                         <form class="home-search-form" action="{{ route('shop') }}" method="GET">
-                            <input type="search" name="name" placeholder="Search here...">
+                            <input type="search" name="name" placeholder="{{ __('home.search_placeholder') }}">
                             <button>
                                 <i class="fa fa-search"></i>
                             </button>
@@ -111,16 +111,16 @@
                     <div class="main-menu">
                         <ul>
                             <li>
-                                <a href="#new-product" class="nav-link">New Product</a>
+                                <a href="#new-product" class="nav-link">{{ __('home.nav_new_product') }}</a>
                             </li>
                             <li>
-                                <a href="#promo" class="nav-link">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                                <a href="#promo" class="nav-link">{{ __('home.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                             </li>
                             <li class="dropdown position-relative">
-                                <a href="#">Catalogue <i class="ion-ios-arrow-down"></i></a>
+                                <a href="#">{{ __('home.nav_catalogue') }} <i class="ion-ios-arrow-down"></i></a>
                                 <ul class="sub-menu">
                                     <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('home.nav_all_product') }}</a>
                                 </li>
                                     @foreach ($types as $type)
                                         <li><a href="{{ route('shop', ['type' => $type->id]) }}">{{ $type->name }}</a>
@@ -129,10 +129,10 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="#about" class="nav-link">Information</a>
+                                <a href="#about" class="nav-link">{{ __('home.nav_information') }}</a>
                             </li>
                             <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('home.nav_our_machine') }}</a>
                         </li>
                         </ul>
                     </div>
@@ -140,7 +140,7 @@
                         <div class="header_account_list">
                             <div>
                                 <form id="home-search-form" class="home-search-form" action="{{ route('shop') }}" method="GET">
-                                    <input type="search" name="name" placeholder="Search here..." id="search-input">
+                                    <input type="search" name="name" placeholder="{{ __('home.search_placeholder') }}" id="search-input">
                                     <button type="button"> <!-- Add type="button" to prevent form submission -->
                                         <i class="fa fa-search"></i>
                                     </button>
@@ -167,15 +167,15 @@
                             <a href="/">Home </a>
                         </li>
                         <li>
-                            <a href = "#new-product">New Product</a>
+                            <a href = "#new-product">{{ __('home.nav_new_product') }}</a>
                         </li>
                         <li>
-                            <a href="#promo">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                            <a href="#promo">{{ __('home.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                         </li>
-                        <li><a href="#"><span class="menu-text">Catalogue</span></a>
+                        <li><a href="#"><span class="menu-text">{{ __('home.nav_catalogue') }}</span></a>
                             <ul class="sub-menu">
                                  <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('home.nav_all_product') }}</a>
                                 </li>
                                 @foreach ($types as $type)
                                     <li>
@@ -196,10 +196,10 @@
                             </ul>
                         </li>
                         <li>
-                            <a href = "#about">Information</a>
+                            <a href = "#about">{{ __('home.nav_information') }}</a>
                         </li>
                         <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('home.nav_our_machine') }}</a>
                         </li>
                     </ul>
                 </div>
@@ -253,8 +253,8 @@
                 <div class="row">
                     <div class="col-md-12 text-center" data-aos="fade-up">
                         <div class="section-title mb-0">
-                            <h2 class="title">HOT DEALS <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></h2>
-                            <p class="sub-title mb-30px">Save more with our HOT DEALS offer!</p>
+                            <h2 class="title">{{ __('home.hot_deals_title') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></h2>
+                            <p class="sub-title mb-30px">{{ __('home.hot_deals_sub') }}</p>
                         </div>
                     </div>
                 </div>
@@ -266,7 +266,7 @@
                                 <a href="https://wa.me/{{ $admin_1 }}?text=Halo admin, saya mendapat info promo {{ $type->name }} dari website Ibekami.id, apakah promonya masih tersedia?"  target="_blank" class="category-inner ">
                                     <div class="category-single-item">
                                         <img src="{{ asset('storage/gambar_jenis/' . $type->image_url) }}" alt="">
-                                        <span class="promo-btn">Ask for details</span>
+                                        <span class="promo-btn">{{ __('home.ask_details') }}</span>
                                     </div>
                                 </a>
                             </div>
@@ -285,8 +285,8 @@
                 <div class="row">
                     <div class="col-md-12 text-center" data-aos="fade-up">
                         <div class="section-title mb-0">
-                            <h2 class="title">Product Available</h2>
-                            <p class="sub-title mb-30px">Made with love from us to you</p>
+                            <h2 class="title">{{ __('home.product_title') }}</h2>
+                            <p class="sub-title mb-30px">{{ __('home.product_sub') }}</p>
                         </div>
                     </div>
                 </div>
@@ -314,7 +314,7 @@
                                                     <a href="{{ route('product', $product->product_id) }}">
                                                         <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
                                                             <i class="icon-magnifier"></i>
-                                                            <p>Discover more</p>
+                                                            <p>{{ __('home.discover_more') }}</p>
                                                         </button>
                                                     </a>
                                                 </span>
@@ -326,7 +326,7 @@
                                                     <a href="{{ route('product', $product->product_id) }}">
                                                         <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
                                                             <i class="icon-magnifier"></i>
-                                                            <p>Discover more</p>
+                                                            <p>{{ __('home.discover_more') }}</p>
                                                         </button>
                                                     </a>
                                                 </span>
@@ -352,8 +352,8 @@
                 <div class="row">
                     <div class="col-md-12" data-aos="fade-up">
                         <div class="section-title text-center mb-11">
-                            <h2 class="title">Our Marketplace!</h2>
-                            <p class="sub-title">Free Shipping from our Shop through these e-commerce platforms</p>
+                            <h2 class="title">{{ __('home.marketplace_title') }}</h2>
+                            <p class="sub-title">{{ __('home.marketplace_sub') }}</p>
                         </div>
                     </div>
                 </div>
@@ -370,8 +370,8 @@
                                         <p>ETC.</p>
                                     </div>
                                     <div class="down">
-                                        <h4>SHIPPED STRAIGHT TO <span>YOU,<br> ANYTIME, ANYWHERE</span> FOR</h4>
-                                        <h3>FREE</h3>
+                                        <h4>{!! __('home.shipped_to_you') !!}</h4>
+                                        <h3>{{ __('home.free') }}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -385,8 +385,8 @@
                             <div class="banner-container">
                                 <img src="images/banner/shope-nocapt.jpg" alt="Shopee Banner" />
                                 <div class="overlay-text">
-                                    <h2><span>FREE</span> SHIPPING!</h2>
-                                    <h3>For <span>all</span> products!</h3>
+                                    <h2>{!! __('home.free_shipping') !!}</h2>
+                                    <h3>{!! __('home.for_all_products') !!}</h3>
                                 </div>
                             </div>
                         </a>
@@ -400,7 +400,7 @@
 
         <!-- Testimony Area Start -->
         <div class="section testimonial-section">
-            <h1 class="main-heading">What They Say About Us</h1>
+            <h1 class="main-heading">{{ __('home.testimony_title') }}</h1>
             {{-- <div class="divider"></div> --}}
             <div class="testimonial-person-slider swiper-container">
                 <div class="testimony-wrapper swiper-wrapper">
@@ -438,8 +438,8 @@
         <div class="row">
             <div class="col-md-12" data-aos="fade-up">
                 <div class="section-title text-center mb-11">
-                    <h2 class="title">Catch Us On Social Media</h2>
-                    <p class="sub-title">Explore captivating content tailored just for you<br>click on the video below to discover something truly special!</p>
+                    <h2 class="title">{{ __('home.social_title') }}</h2>
+                    <p class="sub-title">{!! __('home.social_sub') !!}</p>
                 </div>
             </div>
         </div>
@@ -449,7 +449,7 @@
                     <a href="https://www.instagram.com/ibekami.id" class="instagram" target="_blank">
                         <video class="w-100" autoplay loop muted playsinline>
                             <source src="videos/instagram.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
+                            {{ __('home.video_not_supported') }}
                         </video>
                     </a>
                 </div>
@@ -459,7 +459,7 @@
                     <a href="https://www.tiktok.com/@ibekami.id" class="tiktok" target="_blank">
                         <video class="w-100" autoplay loop muted playsinline>
                             <source src="videos/tiktok.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
+                            {{ __('home.video_not_supported') }}
                         </video>
                     </a>
                 </div>
@@ -474,7 +474,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="section-title text-center mb-11">
-                            <h2 class="title">Our Partner</h2>
+                            <h2 class="title">{{ __('home.partner_title') }}</h2>
                         </div>
                         <div class="col-12">
                             <div class="company-logo-slider slider-nav-style-1">

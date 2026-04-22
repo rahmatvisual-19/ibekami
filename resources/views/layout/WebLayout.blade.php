@@ -116,7 +116,7 @@
                         <!-- Start single blog -->
                         <div class="col-md-6 col-lg-3 mb-md-30px mb-lm-30px" data-aos="fade-up" data-aos-delay="200">
                             <div class="single-wedge">
-                            <h4>Social Media</h4>
+                            <h4>{{ __('layout.social_media') }}</h4>
                                 <ul class="social-links align-items-center">
                                     <li><a class="ion-social-instagram" href="https://www.instagram.com/ibekami.id" target="_blank"> @ibekami.id</a></li>
                                     <li><i class="fa-brands fa-tiktok"><a href="https://www.tiktok.com/@ibekami.id" target="_blank"> @ibekami.id</i></a></li>
@@ -126,11 +126,11 @@
                             </div>
                             <br><br>
                             <div class="single-wedge">
-                                <h4 class="footer-herading">Ask To Order</h4>
+                                <h4 class="footer-herading">{{ __('layout.ask_to_order') }}</h4>
 
                                 <!-- Tombol WhatsApp -->
-                                <a href="https://wa.me/{{ $admin_1 }}?text=Halo%20Admin,%20saya%20tertarik%20dengan%20produk%20dari%20Ibekami.id.%20Bisa%20bantu%20untuk%20info%20lebih%20lanjut?" target="_blank" class="whatsapp-button">
-                                    <i class="fab fa-whatsapp"></i> Ask Now !
+                                <a href="https://wa.me/{{ $admin_1 }}?text={{ urlencode(__('layout.whatsapp_text')) }}" target="_blank" class="whatsapp-button">
+                                    <i class="fab fa-whatsapp"></i> {{ __('layout.ask_now') }}
                                 </a>
                             </div>
                         </div>
@@ -139,12 +139,12 @@
                         <div class="col-md-6 col-sm-6 col-lg-3" data-aos="fade-up"
                             data-aos-delay="400">
                             <div class="single-wedge">
-                                <h4 class="footer-herading">Contacts</h4>
+                                <h4 class="footer-herading">{{ __('layout.contacts') }}</h4>
                                 <div class="footer-links">
                                     <div class="footer-row">
                                         <ul class="contact-info align-items-center">
                                             <li>📧 Email: <a href="mailto:ibeka1011@gmail.com" target="_blank">ibeka1011@gmail.com</a></li>
-                                            <li><a href="/privacy-policy" style="color: inherit; text-decoration: none;">Privacy Policy</a></li>
+                                            <li><a href="/privacy-policy" style="color: inherit; text-decoration: none;">{{ __('layout.privacy_policy') }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -152,12 +152,12 @@
                             
                             <br>
                             <div class="single-wedge">
-                                <h4 class="footer-herading">Operational Hours</h4>
+                                <h4 class="footer-herading">{{ __('layout.operational_hours') }}</h4>
                                 <div class="footer-links">
                                     <div class="footer-row">
                                         <ul class="align-items-center operational-hours">
-                                          <li>📅 Monday – Saturday: 08:30 – 17:00 WIB</li>
-                                            <li>🚫 Holiday / National Duty: Closed</li>
+                                          <li>{{ __('layout.op_hours_value') }}</li>
+                                            <li>{{ __('layout.op_hours_holiday') }}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -168,7 +168,7 @@
 
                         <div class="col-md-4 col-lg-6 col-sm-6 mb-lm-30px" data-aos="fade-up" data-aos-delay="600">
                             <div class="single-wedge">
-                                <h4 class="footer-herading">Location</h4>
+                                <h4 class="footer-herading">{{ __('layout.location') }}</h4>
                                 <!-- Google Maps Embed -->
                                 <div class="mapouter" style="position: relative; text-align: right; height: 400px; width: 100%;">
                                     <div class="gmap_canvas" style="overflow: hidden; background: none!important; height: 400px; width: 100%;">
@@ -189,19 +189,6 @@
             </div>
         </div>
     </div>
-            <div id="google_translate_element"></div>
-        
-        <script type="text/javascript">
-        function googleTranslateElementInit() {
-          new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
-        }
-        </script>
-        
-
-
-
-        
-        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <!-- Footer Area End -->
     </section>
     <section>

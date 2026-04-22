@@ -15,6 +15,14 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [Controller::class, 'home'])->name('home');
+
+// Ganti bahasa manual
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['id', 'en'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch');
 Route::get('/catalogue', [Controller::class, 'shop'])->name('shop');
 Route::get('/product/{product_id}', [Controller::class, 'product'])->name('product');
 Route::get('/machine', [Controller::class, 'machine'])->name('machine');

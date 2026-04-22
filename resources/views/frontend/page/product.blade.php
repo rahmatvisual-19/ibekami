@@ -17,7 +17,7 @@
                 
                 <div class="header_account_list">
                     <form class="home-search-form" action="{{ route('shop') }}" method="GET">
-                        <input type="search" name="name" placeholder="Search here...">
+                        <input type="search" name="name" placeholder="{{ __('product.search_placeholder') }}">
                         <button>
                             <i class="fa fa-search"></i>
                         </button>
@@ -44,16 +44,16 @@
                 <div class="main-menu">
                              <ul>
                             <li>
-                                <a href="#new-product" class="nav-link">New Product</a>
+                                <a href="{{ url('/') }}#new-product" class="nav-link">{{ __('product.nav_new_product') }}</a>
                             </li>
                             <li>
-                                <a href="#promo" class="nav-link">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                                <a href="{{ url('/') }}#promo" class="nav-link">{{ __('product.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                             </li>
                             <li class="dropdown position-relative">
-                                <a href="#">Catalogue <i class="ion-ios-arrow-down"></i></a>
+                                <a href="#">{{ __('product.nav_catalogue') }} <i class="ion-ios-arrow-down"></i></a>
                                 <ul class="sub-menu">
                                     <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('product.nav_all_product') }}</a>
                                 </li>
                                     @foreach ($types as $type)
                                         <li><a href="{{ route('shop', ['type' => $type->id]) }}">{{ $type->name }}</a>
@@ -62,10 +62,10 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="#about" class="nav-link">Information</a>
+                                <a href="#about" class="nav-link">{{ __('product.nav_information') }}</a>
                             </li>
                             <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('product.nav_our_machine') }}</a>
                         </li>
                         </ul>
                         </div>
@@ -73,7 +73,7 @@
                     <div class="header_account_list">
                         <div>
                             <form id="home-search-form" class="home-search-form" action="{{ route('shop') }}" method="GET">
-                                <input type="search" name="name" placeholder="Search here..." id="search-input">
+                                <input type="search" name="name" placeholder="{{ __('product.search_placeholder') }}" id="search-input">
                                 <button type="button"> <!-- Add type="button" to prevent form submission -->
                                     <i class="fa fa-search"></i>
                                 </button>
@@ -98,15 +98,15 @@
                             <a href="/">Home </a>
                         </li>
                         <li>
-                            <a href = "#new-product">New Product</a>
+                            <a href = "{{ url('/') }}#new-product">{{ __('product.nav_new_product') }}</a>
                         </li>
                         <li>
-                            <a href="#promo">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                            <a href="{{ url('/') }}#promo">{{ __('product.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                         </li>
-                        <li><a href="#"><span class="menu-text">Catalogue</span></a>
+                        <li><a href="#"><span class="menu-text">{{ __('product.nav_catalogue') }}</span></a>
                             <ul class="sub-menu">
                                  <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('product.nav_all_product') }}</a>
                                 </li>
                                 @foreach ($types as $type)
                                     <li>
@@ -127,10 +127,10 @@
                             </ul>
                         </li>
                         <li>
-                            <a href = "#about">Information</a>
+                            <a href = "#about">{{ __('product.nav_information') }}</a>
                         </li>
                         <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('product.nav_our_machine') }}</a>
                         </li>
                     </ul>
             </div>
@@ -153,8 +153,8 @@
                         <div class="col-lg-6  col-md-6 col-sm-12">
                             <!-- breadcrumb-list start -->
                             <ul class="breadcrumb-list text-center text-md-end">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('shop') }}">Catalogue</a></li>
+                                <li class="breadcrumb-item"><a href="/">{{ __('product.breadcrumb_home') }}</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('shop') }}">{{ __('product.breadcrumb_catalogue') }}</a></li>
                                 <li class="breadcrumb-item active">{{ $product->name }}</li>
                             </ul>
                             <!-- breadcrumb-list end -->
@@ -208,14 +208,14 @@
 
                                     <!-- Product Description -->
                                     <div class="product-description-wrapper">
-                                        <h4>Description</h4>
+                                        <h4>{{ __('product.description') }}</h4>
                                         <p>{{ $product->description }}</p>
                                     </div>
                                     <!-- Product Description End-->
 
                                 <!-- Product Details -->
                                 <div class="product-anotherinfo-wrapper">
-                                    <h4>Product Details</h4>
+                                    <h4>{{ __('product.product_details') }}</h4>
                                     <ul>
                                         @if ($product->detail)
                                             @foreach ($product->detail as $key => $value)
@@ -231,25 +231,25 @@
                                                 </li>
                                             @endforeach
                                         @else
-                                            <li class="no-detail">No Detail</li>
+                                            <li class="no-detail">{{ __('product.no_detail') }}</li>
                                         @endif
                                     </ul>
                                 </div>
                                 <!-- END OF NEW DESCRIPTION -->
                                 <div class="pro-details-cart">
-                                    <a href="https://wa.me/{{ $admin_1 }}?text=Halo, saya ingin bertanya mengenai produk {{ $product->name }}"  
+                                    <a href="https://wa.me/{{ $admin_1 }}?text={{ urlencode(__('product.whatsapp_text', ['name' => $product->name])) }}"  
                                     target="_blank"
                                     class="whatsapp-order-btn"
                                     data-product-id="{{ $product->product_id }}">
                                         <button class="add-cart btn btn-primary btn-hover-primary ml-4">
                                             <i class="icon-handbag"></i>
-                                            <span>Ask to Order</span>
+                                            <span>{{ __('product.ask_to_order') }}</span>
                                         </button>
                                     </a>
                                     <a href="/catalogue">
                                         <button class="add-cart btn btn-primary btn-hover-primary ml-4" href="/catalogue">
                                             <i class="icon-arrow-left"></i>
-                                            <span>Back to Catalogue</span>
+                                            <span>{{ __('product.back_to_catalogue') }}</span>
                                         </button>
                                     </a>
                                 </div>
@@ -269,7 +269,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="section-title text-start mb-11">
-                        <h2 class="title">You Might Also Like</h2>
+                        <h2 class="title">{{ __('product.you_might_like') }}</h2>
                     </div>
                 </div>
             </div>
@@ -296,7 +296,7 @@
                                         <a href="{{ route('product', $related_product->product_id) }}">
                                             <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
                                                 <i class="icon-magnifier"></i>
-                                                <p>Discover more</p>
+                                                <p>{{ __('product.discover_more') }}</p>
                                             </button>
                                         </a>
                                     </span>
@@ -310,7 +310,7 @@
                                     <a href="{{ route('product', $related_product->product_id) }}">
                                         <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
                                             <i class="icon-magnifier"></i>
-                                            <p>Discover more</p>
+                                            <p>{{ __('product.discover_more') }}</p>
                                         </button>
                                     </a>
                                 </span>

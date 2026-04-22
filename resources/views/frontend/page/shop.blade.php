@@ -4,9 +4,9 @@
     @php
         $type = \App\Models\Type::find(request('type'));
     @endphp
-    @section('title', "Catalogue $type->name")
+    @section('title', __('shop.breadcrumb_catalogue') . " $type->name")
 @else
-    @section('title', 'Catalogue Products')
+    @section('title', __('shop.breadcrumb_catalogue') . ' Products')
 @endif
 
 @section('content')
@@ -24,7 +24,7 @@
                
                 <div class="header_account_list">
                     <form class="home-search-form" action="{{ route('shop') }}" method="GET">
-                        <input type="search" name="name" placeholder="Search here...">
+                        <input type="search" name="name" placeholder="{{ __('shop.search_placeholder') }}">
                         <button>
                             <i class="fa fa-search"></i>
                         </button>
@@ -51,16 +51,16 @@
                 <div class="main-menu">
                              <ul>
                             <li>
-                                <a href="#new-product" class="nav-link">New Product</a>
+                                <a href="{{ url('/') }}#new-product" class="nav-link">{{ __('shop.nav_new_product') }}</a>
                             </li>
                             <li>
-                                <a href="#promo" class="nav-link">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                                <a href="{{ url('/') }}#promo" class="nav-link">{{ __('shop.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                             </li>
                             <li class="dropdown position-relative">
-                                <a href="#">Catalogue <i class="ion-ios-arrow-down"></i></a>
+                                <a href="#">{{ __('shop.nav_catalogue') }} <i class="ion-ios-arrow-down"></i></a>
                                 <ul class="sub-menu">
                                     <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('shop.nav_all_product') }}</a>
                                 </li>
                                     @foreach ($types as $type)
                                         <li><a href="{{ route('shop', ['type' => $type->id]) }}">{{ $type->name }}</a>
@@ -69,10 +69,10 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="#about" class="nav-link">Information</a>
+                                <a href="#about" class="nav-link">{{ __('shop.nav_information') }}</a>
                             </li>
                             <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('shop.nav_our_machine') }}</a>
                         </li>
                         </ul>
                         </div>
@@ -80,7 +80,7 @@
                     <div class="header_account_list">
                         <div>
                             <form id="home-search-form" class="home-search-form" action="{{ route('shop') }}" method="GET">
-                                <input type="search" name="name" placeholder="Search here..." id="search-input">
+                                <input type="search" name="name" placeholder="{{ __('shop.search_placeholder') }}" id="search-input">
                                 <button type="button"> <!-- Add type="button" to prevent form submission -->
                                     <i class="fa fa-search"></i>
                                 </button>
@@ -104,15 +104,15 @@
                             <a href="/">Home </a>
                         </li>
                         <li>
-                            <a href = "#new-product">New Product</a>
+                            <a href = "{{ url('/') }}#new-product">{{ __('shop.nav_new_product') }}</a>
                         </li>
                         <li>
-                            <a href="#promo">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                            <a href="{{ url('/') }}#promo">{{ __('shop.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                         </li>
-                        <li><a href="#"><span class="menu-text">Catalogue</span></a>
+                        <li><a href="#"><span class="menu-text">{{ __('shop.nav_catalogue') }}</span></a>
                             <ul class="sub-menu">
                                  <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('shop.nav_all_product') }}</a>
                                 </li>
                                 @foreach ($types as $type)
                                     <li>
@@ -133,10 +133,10 @@
                             </ul>
                         </li>
                         <li>
-                            <a href = "#about">Information</a>
+                            <a href = "#about">{{ __('shop.nav_information') }}</a>
                         </li>
                         <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('shop.nav_our_machine') }}</a>
                         </li>
                     </ul>
             </div>
@@ -152,18 +152,18 @@
                 <div class="col-12">
                     <div class="row breadcrumb_box  align-items-center">
                         <div class="col-lg-6 col-md-6 col-sm-12 text-center text-md-start">
-                            <h2 class="breadcrumb-title">CATALOGUE</h2>
+                            <h2 class="breadcrumb-title">{{ __('shop.breadcrumb_title') }}</h2>
                         </div>
                         <div class="col-lg-6  col-md-6 col-sm-12">
                             <!-- breadcrumb-list start -->
                             <ul class="breadcrumb-list text-center text-md-end">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/">{{ __('shop.breadcrumb_home') }}</a></li>
                                 @if (request('type') || request('category'))   
                                     <li class="breadcrumb-item">
-                                        <a href="{{ route('shop') }}">Catalogue</a>
+                                        <a href="{{ route('shop') }}">{{ __('shop.breadcrumb_catalogue') }}</a>
                                     </li>
                                 @else
-                                    <li class="breadcrumb-item">Catalogue</li>
+                                    <li class="breadcrumb-item">{{ __('shop.breadcrumb_catalogue') }}</li>
                                 @endif
                                
 
@@ -232,26 +232,26 @@
                     <!-- Shop Top Area Start -->
                     <div class="shop-top-bar d-flex">
                         <!-- Left Side start -->
-                        <p>There Are {{ $productCount }} Products.</p>
+                        <p>{{ __('shop.product_count', ['count' => $productCount]) }}</p>
                         <!-- Left Side End -->
                         <!-- Right Side Start -->
                         <div class="select-shoing-wrap d-flex align-items-center">
                             <div class="shot-product">
-                                <p>Sort By:</p>
+                                <p>{{ __('shop.sort_by') }}</p>
                             </div>
                             <div class="shop-select">
                                 <select class="shop-sort" onchange="window.location.href = this.value;">
                                     <option value="{{ route('shop', ['sort' => 'time_desc'] + request()->query()) }}" {{ request('sort') == 'time_desc' ? 'selected' : '' }}>
-                                        Newest
+                                        {{ __('shop.sort_newest') }}
                                     </option>
                                     <option value="{{ route('shop', ['sort' => 'time_asc'] + request()->query()) }}" {{ request('sort') == 'time_asc' ? 'selected' : '' }}>
-                                        Latest
+                                        {{ __('shop.sort_oldest') }}
                                     </option>
                                     <option value="{{ route('shop', ['sort' => 'name_asc'] + request()->query()) }}" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>
-                                        Name, A to Z
+                                        {{ __('shop.sort_name_asc') }}
                                     </option>
                                     <option value="{{ route('shop', ['sort' => 'name_desc'] + request()->query()) }}" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>
-                                        Name, Z to A
+                                        {{ __('shop.sort_name_desc') }}
                                     </option>
                                 </select>
                             </div>
@@ -265,8 +265,8 @@
                             @if($products->isEmpty())
                                 <div class="col-12 text-center">
                                     <div class="error-404 d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
-                                        <h2>Oops! No products found.</h2>
-                                        <a href="{{ url('/') }}" class="btn btn-primary">Home</a>
+                                        <h2>{{ __('shop.no_products') }}</h2>
+                                        <a href="{{ url('/') }}" class="btn btn-primary">{{ __('shop.back_home') }}</a>
                                     </div>
                                 </div>
                             @else
@@ -287,7 +287,7 @@
                                                     <a href="{{ route('product', $product->product_id) }}">
                                                         <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
                                                             <i class="icon-magnifier"></i>
-                                                            <p>Discover more</p>
+                                                            <p>{{ __('shop.discover_more') }}</p>
                                                         </button>
                                                     </a>
                                                 </span>
@@ -299,7 +299,7 @@
                                                 <a href="{{ route('product', $product->product_id) }}">
                                                     <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
                                                         <i class="icon-magnifier"></i>
-                                                        <p>Discover more</p>
+                                                        <p>{{ __('shop.discover_more') }}</p>
                                                     </button>
                                                 </a>
                                             </span>
@@ -318,7 +318,7 @@
                         <!-- Sidebar single item -->
                         <div class="sidebar-widget">
                             <div class="main-heading">
-                                <h3 class="sidebar-title">Category</h3>
+                                <h3 class="sidebar-title">{{ __('shop.sidebar_category') }}</h3>
                             </div>
                             <div class="sidebar-widget-category">
                                 <ul>

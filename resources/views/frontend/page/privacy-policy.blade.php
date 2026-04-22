@@ -1,6 +1,6 @@
 @extends('layout.WebLayout')
 
-@section('title', 'Kebijakan Privasi IBEKAMI')
+@section('title', __('privacy.page_title'))
 
 @section('content')
 <style>
@@ -189,12 +189,12 @@
                 <div class="privacy_header">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center">
-                            <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Privacy Policy</li>
+                            <li class="breadcrumb-item"><a href="/">{{ __('privacy.breadcrumb_home') }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ __('privacy.breadcrumb_active') }}</li>
                         </ol>
                     </nav>
-                    <h1>Kebijakan Privasi IBEKAMI</h1>
-                    <p class="last-updated">Terakhir diperbarui: {{ date('d F Y') }}</p>
+                    <h1>{{ __('privacy.page_title') }}</h1>
+                    <p class="last-updated">{{ __('privacy.last_updated', ['date' => date('d F Y')]) }}</p>
                 </div>
             </div>
         </div>
@@ -203,14 +203,14 @@
             <!-- Sidebar Nav (Desktop only) -->
             <div class="col-lg-3 d-none d-lg-block">
                 <div class="toc_sidebar">
-                    <h5>Daftar Isi</h5>
+                    <h5>{{ __('privacy.toc_title') }}</h5>
                     <ul>
-                        <li><a href="#section-1">1. Informasi Koleksi</a></li>
-                        <li><a href="#section-2">2. Penggunaan Data</a></li>
-                        <li><a href="#section-3">3. Keamanan Data</a></li>
-                        <li><a href="#section-4">4. Pihak Ketiga</a></li>
-                        <li><a href="#section-5">5. Hak Pelanggan</a></li>
-                        <li><a href="#section-6">6. Kontak Kami</a></li>
+                        <li><a href="#section-1">{{ __('privacy.toc_1') }}</a></li>
+                        <li><a href="#section-2">{{ __('privacy.toc_2') }}</a></li>
+                        <li><a href="#section-3">{{ __('privacy.toc_3') }}</a></li>
+                        <li><a href="#section-4">{{ __('privacy.toc_4') }}</a></li>
+                        <li><a href="#section-5">{{ __('privacy.toc_5') }}</a></li>
+                        <li><a href="#section-6">{{ __('privacy.toc_6') }}</a></li>
                     </ul>
                 </div>
             </div>
@@ -221,59 +221,59 @@
                     <div class="privacy_content">
                         
                         <div id="section-0" class="mb-5">
-                            <p class="lead">Di IBEKAMI, kami sangat menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan layanan kami.</p>
+                            <p class="lead">{{ __('privacy.intro') }}</p>
                         </div>
 
                         <div id="section-1">
-                            <h3>1. Informasi yang Kami Kumpulkan</h3>
-                            <p>Kami mengumpulkan informasi yang Anda berikan secara langsung saat melakukan pemesanan atau konsultasi desain:</p>
+                            <h3>{{ __('privacy.s1_title') }}</h3>
+                            <p>{{ __('privacy.s1_desc') }}</p>
                             <ul>
-                                <li><strong>Identitas Pribadi:</strong> Nama lengkap dan alamat pengiriman untuk keperluan logistik produk (plakat, tumbler, banner).</li>
-                                <li><strong>Informasi Kontak:</strong> Alamat email dan nomor telepon/WhatsApp untuk koordinasi pesanan.</li>
-                                <li><strong>Data Desain:</strong> File logo, foto, atau materi desain yang Anda kirimkan untuk kebutuhan cetak kustom.</li>
+                                <li>{!! __('privacy.s1_item1') !!}</li>
+                                <li>{!! __('privacy.s1_item2') !!}</li>
+                                <li>{!! __('privacy.s1_item3') !!}</li>
                             </ul>
                         </div>
 
                         <div id="section-2">
-                            <h3>2. Penggunaan Informasi Anda</h3>
-                            <p>Informasi yang kami kumpulkan digunakan secara eksklusif untuk:</p>
+                            <h3>{{ __('privacy.s2_title') }}</h3>
+                            <p>{{ __('privacy.s2_desc') }}</p>
                             <ul>
-                                <li>Memproses dan menyelesaikan pesanan produk digital printing atau souvenir Anda.</li>
-                                <li>Berkomunikasi terkait status pesanan atau pertanyaan teknis desain.</li>
-                                <li>Mengatur pengiriman barang agar sampai tepat waktu ke lokasi Anda.</li>
-                                <li>Meningkatkan kualitas layanan berdasarkan umpan balik pelanggan.</li>
+                                <li>{{ __('privacy.s2_item1') }}</li>
+                                <li>{{ __('privacy.s2_item2') }}</li>
+                                <li>{{ __('privacy.s2_item3') }}</li>
+                                <li>{{ __('privacy.s2_item4') }}</li>
                             </ul>
                         </div>
 
                         <div id="section-3">
-                            <h3>3. Keamanan Data Pelanggan</h3>
-                            <p>Kami berkomitmen untuk menjaga keamanan data Anda. File desain yang Anda kirimkan untuk kebutuhan produksi hanya akan digunakan untuk kepentingan produksi pesanan Anda dan tidak akan disebarluaskan.</p>
+                            <h3>{{ __('privacy.s3_title') }}</h3>
+                            <p>{{ __('privacy.s3_desc') }}</p>
                         </div>
 
                         <div id="section-4">
-                            <h3>4. Layanan Pihak Ketiga</h3>
-                            <p>Kami bekerja sama dengan platform e-commerce dan mitra logistik. Harap dicatat bahwa saat bertransaksi melalui marketplace, kebijakan privasi platform tersebut juga berlaku.</p>
+                            <h3>{{ __('privacy.s4_title') }}</h3>
+                            <p>{{ __('privacy.s4_desc') }}</p>
                         </div>
 
                         <div id="section-5">
-                            <h3>5. Hak Anda sebagai Pelanggan</h3>
-                            <p>Anda memiliki kontrol penuh atas data Anda, termasuk hak untuk:</p>
+                            <h3>{{ __('privacy.s5_title') }}</h3>
+                            <p>{{ __('privacy.s5_desc') }}</p>
                             <ul>
-                                <li>Meminta rincian data pribadi yang kami simpan.</li>
-                                <li>Memperbarui atau memperbaiki data kontak dan alamat yang salah.</li>
-                                <li>Meminta penghapusan data Anda dari sistem kami dengan menghubungi admin.</li>
+                                <li>{{ __('privacy.s5_item1') }}</li>
+                                <li>{{ __('privacy.s5_item2') }}</li>
+                                <li>{{ __('privacy.s5_item3') }}</li>
                             </ul>
                         </div>
 
                         <div id="section-6">
-                            <h3>6. Jam Operasional dan Kontak</h3>
-                            <p>Jika ada pertanyaan lebih lanjut, tim support kami siap membantu pada jam operasional <strong>(Senin – Sabtu: 08:30 – 17:00 WIB)</strong> melalui:</p>
+                            <h3>{{ __('privacy.s6_title') }}</h3>
+                            <p>{!! __('privacy.s6_desc') !!}</p>
                             
                             <div class="contact_box">
                                 <ul class="mb-0">
-                                    <li><strong>Email:</strong> <a href="mailto:ibeka1011@gmail.com">ibeka1011@gmail.com</a></li>
-                                    <li><strong>Instagram:</strong> <a href="https://instagram.com/ibekami.id" target="_blank">@ibekami.id</a></li>
-                                    <li><strong>Lokasi:</strong> Medan, Indonesia</li>
+                                    <li><strong>{{ __('privacy.s6_email') }}:</strong> <a href="mailto:ibeka1011@gmail.com">ibeka1011@gmail.com</a></li>
+                                    <li><strong>{{ __('privacy.s6_instagram') }}:</strong> <a href="https://instagram.com/ibekami.id" target="_blank">@ibekami.id</a></li>
+                                    <li><strong>{{ __('privacy.s6_location') }}:</strong> {{ __('privacy.s6_loc_value') }}</li>
                                 </ul>
                             </div>
                         </div>

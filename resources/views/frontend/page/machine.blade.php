@@ -1,6 +1,6 @@
 @extends('layout.WebLayout')
 
-@section('title', 'Our Machine Ibekakami')
+@section('title', __('machine.page_title'))
 
 @section('content')
     <!-- Header Area start  -->
@@ -17,7 +17,7 @@
                 
                 <div class="header_account_list">
                     <form class="home-search-form" action="{{ route('shop') }}" method="GET">
-                        <input type="search" name="name" placeholder="Search here...">
+                        <input type="search" name="name" placeholder="{{ __('machine.search_placeholder') }}">
                         <button>
                             <i class="fa fa-search"></i>
                         </button>
@@ -44,16 +44,16 @@
                     <div class="main-menu">
                         <ul>
                             <li>
-                                <a href="{{ url('/') }}#new-product" class="nav-link">New Product</a>
+                                <a href="{{ url('/') }}#new-product" class="nav-link">{{ __('machine.nav_new_product') }}</a>
                             </li>
                             <li>
-                                <a href="{{ url('/') }}s#promo" class="nav-link">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                                <a href="{{ url('/') }}#promo" class="nav-link">{{ __('machine.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                             </li>
                             <li class="dropdown position-relative">
-                                <a href="#">Catalogue <i class="ion-ios-arrow-down"></i></a>
+                                <a href="#">{{ __('machine.nav_catalogue') }} <i class="ion-ios-arrow-down"></i></a>
                                 <ul class="sub-menu">
                                      <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('machine.nav_all_product') }}</a>
                                 </li>
                                     @foreach ($types as $type)
                                         <li><a href="{{ route('shop', ['type' => $type->id]) }}">{{ $type->name }}</a>
@@ -62,10 +62,10 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="#about" class="nav-link">Information</a>
+                                <a href="#about" class="nav-link">{{ __('machine.nav_information') }}</a>
                             </li>
                             <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('machine.nav_our_machine') }}</a>
                         </li>
                         </ul>
                     </div>
@@ -73,7 +73,7 @@
                         <div class="header_account_list">
                             <div>
                                 <form id="home-search-form" class="home-search-form" action="{{ route('shop') }}" method="GET">
-                                    <input type="search" name="name" placeholder="Search here..." id="search-input">
+                                    <input type="search" name="name" placeholder="{{ __('machine.search_placeholder') }}" id="search-input">
                                     <button type="button"> <!-- Add type="button" to prevent form submission -->
                                         <i class="fa fa-search"></i>
                                     </button>
@@ -98,15 +98,15 @@
                             <a href="/">Home </a>
                         </li>
                         <li>
-                            <a href = "#new-product">New Product</a>
+                            <a href = "{{ url('/') }}#new-product">{{ __('machine.nav_new_product') }}</a>
                         </li>
                         <li>
-                            <a href="#promo">Hot Deals <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
+                            <a href="{{ url('/') }}#promo">{{ __('machine.nav_hot_deals') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></a>
                         </li>
-                        <li><a href="#"><span class="menu-text">Catalogue</span></a>
+                        <li><a href="#"><span class="menu-text">{{ __('machine.nav_catalogue') }}</span></a>
                             <ul class="sub-menu">
                                  <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('machine.nav_all_product') }}</a>
                                 </li>
                                 @foreach ($types as $type)
                                     <li>
@@ -114,7 +114,7 @@
                                                 class="menu-text">{{ $type->name }}</span></a>
                                         <ul class="sub-menu">
                                              <li>
-                                <a href="{{route('shop')}}">All Product</a>
+                                <a href="{{route('shop')}}">{{ __('machine.nav_all_product') }}</a>
                                 </li>
                                             @foreach ($type->categories as $category)
                                                 <li>
@@ -130,11 +130,11 @@
                             </ul>
                         </li>
                         <li>
-                            <a href = "#about">Information</a>
+                            <a href = "#about">{{ __('machine.nav_information') }}</a>
                         </li>
 
                         <li>
-                            <a href = "{{route('machine')}}">Our Machine</a>
+                            <a href = "{{route('machine')}}">{{ __('machine.nav_our_machine') }}</a>
                         </li>
                         
                     </ul>
@@ -153,13 +153,13 @@
                 <div class="col-12">
                     <div class="row breadcrumb_box  align-items-center">
                         <div class="col-lg-6 col-md-6 col-sm-12 text-center text-md-start">
-                            <h2 class="breadcrumb-title">MACHINE</h2>
+                            <h2 class="breadcrumb-title">{{ __('machine.breadcrumb_title') }}</h2>
                         </div>
                         <div class="col-lg-6  col-md-6 col-sm-12">
                             <!-- breadcrumb-list start -->
                             <ul class="breadcrumb-list text-center text-md-end">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                               <li class="breadcrumb-item">Our Machine</a></li>
+                                <li class="breadcrumb-item"><a href="/">{{ __('machine.breadcrumb_home') }}</a></li>
+                               <li class="breadcrumb-item">{{ __('machine.breadcrumb_machine') }}</li>
                             </ul>
                             <!-- breadcrumb-list end -->
                         </div>
