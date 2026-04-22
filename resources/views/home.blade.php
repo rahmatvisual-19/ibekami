@@ -1,4 +1,21 @@
 @extends('layout.WebLayout')
+
+@php
+    // Ambil banner pertama untuk preload LCP
+    $firstBanner = $banners->first();
+    $firstExt = $firstBanner ? strtolower(pathinfo($firstBanner->image_url, PATHINFO_EXTENSION)) : null;
+    $firstIsVideo = $firstExt && in_array($firstExt, ['mp4', 'webm', 'ogg']);
+    $firstImageUrl = ($firstBanner && !$firstIsVideo && !empty($firstBanner->image_url))
+        ? asset('storage/banner_picture/' . $firstBanner->image_url)
+        : null;
+@endphp
+
+@if($firstImageUrl)
+@section('preload_lcp')
+    <link rel="preload" as="image" href="{{ $firstImageUrl }}" fetchpriority="high">
+@endsection
+@endif
+
 @section('content')
 
         <!-- CSS KHUSUS UNTUK HERO CAROUSEL -->
@@ -96,7 +113,12 @@
                                 Browser Anda tidak mendukung video ini.
                             </video>
                         @else
-                            <img class="hero-panel-img" src="{{ asset('storage/banner_picture/' . $banner->image_url) }}" alt="{{ $banner->title }}">
+                            @if($index === 0)
+                                {{-- Banner pertama: LCP image, jangan lazy load --}}
+                                <img class="hero-panel-img" src="{{ asset('storage/banner_picture/' . $banner->image_url) }}" alt="{{ $banner->title }}" fetchpriority="high">
+                            @else
+                                <img class="hero-panel-img" src="{{ asset('storage/banner_picture/' . $banner->image_url) }}" alt="{{ $banner->title }}" loading="lazy">
+                            @endif
                         @endif
                     @endif
                 </div>
@@ -161,11 +183,11 @@
                                                 <div class="thumb">
                                                     <a href="{{ route('product', $product->product_id) }}" class="image">
                                                         @if(!empty($product->image_url))
-                                                            <img src="{{ asset('storage/gambar_produk/' . $product->image_url[0]) }}" alt="{{ $product->name }}" loading="lazy" />
+                                                            <img src="{{ asset('storage/gambar_produk/' . $product->image_url[0]) }}" alt="{{ $product->name }}" {{ $index < 4 ? 'loading="eager"' : 'loading="lazy"' }} />
                                                             <img class="hover-image" src="{{ asset('storage/gambar_produk/' . $product->image_url[0]) }}" alt="{{ $product->name }}" loading="lazy" />
                                                         @else
-                                                            <img src="{{ asset('images/no-image.png') }}" alt="{{ $product->name }}" loading="lazy" />
-                                                            <img class="hover-image" src="{{ asset('images/no-image.png') }}" alt="{{ $product->name }}" />
+                                                            <img src="{{ asset('images/no-image.png') }}" alt="{{ $product->name }}" {{ $index < 4 ? 'loading="eager"' : 'loading="lazy"' }} />
+                                                            <img class="hover-image" src="{{ asset('images/no-image.png') }}" alt="{{ $product->name }}" loading="lazy" />
                                                         @endif
 
                                                     </a>

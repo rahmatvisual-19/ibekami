@@ -42,15 +42,54 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <!-- CSS Vendor & Plugins -->
-    <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/vendor/simple-line-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/vendor/ionicons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/plugins/animate.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/plugins/swiper-bundle.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/plugins/jquery-ui.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/plugins/nice-select.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/plugins/venobox.css') }}">
+    <!-- Preload CSS utama agar tidak terlambat -->
+    <link rel="preload" href="{{ asset('css/style.css') }}" as="style">
+    <link rel="preload" href="{{ asset('css/vendor/bootstrap.min.css') }}" as="style">
+
+    <!-- Preload LCP image (banner pertama) — diisi dinamis via blade jika tersedia -->
+    @yield('preload_lcp')
+
+    <!-- =============================================
+         CRITICAL CSS — inline untuk render cepat
+         (hanya style yang dibutuhkan layar pertama)
+         ============================================= -->
+    <style>
+        *,*::before,*::after{box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{margin:0;padding:0;font-family:'Open Sans',sans-serif;background:#fff;color:#333}
+        img{max-width:100%;height:auto;display:block}
+        /* Navbar placeholder agar tidak layout shift */
+        .navbar-area{position:relative;z-index:999;background:#fff}
+        /* Hero accordion */
+        .hero-accordion-carousel{width:100%;height:calc(100vh - 90px);display:flex;flex-direction:row;overflow:hidden;background-color:#EFE9DA;box-sizing:border-box}
+        .hero-panel{flex:1 0 0;position:relative;overflow:hidden;display:flex;flex-direction:column;z-index:1;min-width:0;opacity:0}
+        .hero-panel-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+        @media(max-width:768px){.hero-accordion-carousel{flex-wrap:wrap}.hero-panel{flex:0 0 50%;height:50%}}
+        /* Floating WhatsApp */
+        .floating-whatsapp{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;justify-content:center}
+        /* Prevent CLS pada section */
+        section{display:block}
+    </style>
+
+    <!-- CSS Vendor & Plugins — async load (non-blocking) -->
+    <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/vendor/simple-line-icons.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/vendor/ionicons.min.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/plugins/animate.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/plugins/swiper-bundle.min.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/plugins/jquery-ui.min.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/plugins/nice-select.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/plugins/venobox.css') }}" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/vendor/simple-line-icons.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/vendor/ionicons.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/plugins/animate.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/plugins/swiper-bundle.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/plugins/jquery-ui.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/plugins/nice-select.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/plugins/venobox.css') }}">
+    </noscript>
 
     <!-- Font Awesome (async load) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
@@ -59,25 +98,47 @@
     <!-- Google Fonts — hanya 2 font yang paling dipakai -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Main Style -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/testimony.css') }}">
+    <!-- Main Style — async load -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ asset('css/testimony.css') }}" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/testimony.css') }}">
+    </noscript>
 
-    <!-- Google Tag Manager (dipindah ke bawah head, non-blocking) -->
-    <script defer>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-WMSK4N53');</script>
+    <!-- GTM + GA: Load on Interaction (scroll/click/touch) — TBT Fix -->
+    <script>
+    (function() {
+        var analyticsLoaded = false;
+        function loadAnalytics() {
+            if (analyticsLoaded) return;
+            analyticsLoaded = true;
 
-    <!-- Google Analytics (defer) -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-VQG7HT2KD0"></script>
-    <script defer>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VQG7HT2KD0');
-      gtag('config', 'AW-959548694');
+            // Google Tag Manager
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-WMSK4N53');
+
+            // Google Analytics
+            var gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-VQG7HT2KD0';
+            document.head.appendChild(gaScript);
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'G-VQG7HT2KD0');
+            gtag('config', 'AW-959548694');
+        }
+        ['scroll','mousemove','touchstart','keydown','click'].forEach(function(evt) {
+            window.addEventListener(evt, loadAnalytics, { once: true, passive: true });
+        });
+        // Fallback: muat setelah 5 detik jika user tidak interaksi
+        setTimeout(loadAnalytics, 5000);
+    })();
     </script>
 </head>
 
