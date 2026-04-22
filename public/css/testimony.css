@@ -1,0 +1,142 @@
+  .testimonial-section {
+    margin-bottom: 50px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #efe9da;
+    color: white;
+    text-align: center;
+    /* padding: 60px 20px; */
+  }
+  .sub-heading {
+    color: #f7c427;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .main-heading {
+    font-size: 35px;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 30px;
+  }
+  
+  .divider {
+    width: 40px;
+    height: 3px;
+    background-color: #f7c427;
+    margin: 20px auto;
+  }
+  
+  .testimonial-person-slider {
+    display: flex;
+    justify-content: center;
+    width: 78%;
+  }
+
+  .review-card {
+    background: #b25533;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin: 0 10px;
+    height: 350px; /* Fixed height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-shrink: 0; 
+  }
+  
+  .review-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .author-class{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+  .review-author {
+    font-weight: bold;
+    font-size: 18px;
+    color: #efe9da;
+  }
+  
+  .review-date {
+    color: #fff;
+    font-size: 14px;
+    margin-top: 3px;
+  }
+  
+  .review-stars {
+    margin: 10px 0;
+    flex-shrink: 0;
+  }
+  
+  .star {
+    color: #ffb400;
+    font-size: 20px;
+    margin-right: 3px;
+  }
+  
+  .review-text-container {
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 10px;
+  }
+  
+  .review-text {
+    color: #fff;
+    margin-bottom: 5px;
+    line-height: 1.5;
+    font-size: 16px;
+    margin-top: 10px;
+    height: 100%;
+    overflow-y: auto;
+  }
+  @media (max-width: 768px) {
+    .review-card {
+      padding: 20px;
+      height: 300px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+    
+    .swiper-button-prev,
+    .swiper-button-next {
+      display: none;
+    }
+  }
+  /* Custom scrollbar */
+  .review-text::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .review-text::-webkit-scrollbar-track {
+    background: #b25533;
+    border-radius: 10px;
+  }
+  
+  .review-text::-webkit-scrollbar-thumb {
+    background: #fff;
+    border-radius: 10px;
+  }
+  
+  .review-text::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
