@@ -89,25 +89,17 @@
   function previewImage() {
             const input = document.querySelector('#gambar_jenis');
             const imgPreview = document.querySelector('#img-preview');
-        
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-        
-                reader.onload = function(e) {
-                    imgPreview.style.display = 'block';
-                    imgPreview.src = e.target.result;
-                };
-        
-                reader.readAsDataURL(input.files[0]);
-            }
-        
-     else {
-      // Menampilkan gambar lama jika ada
-      const oldImage = "{{ asset('storage/gambar_jenis/' . $jeniss->image_url) }}";
-      imgPreview.style.display = 'block';
-      imgPreview.src = oldImage;
-    }
-  }
 
+            if (input.files && input.files[0]) {
+                WebPConverter.convertToWebP(input.files[0]).then(function(blob) {
+                    imgPreview.style.display = 'block';
+                    imgPreview.src = URL.createObjectURL(blob);
+                });
+            } else {
+                const oldImage = "{{ asset('storage/gambar_jenis/' . $jeniss->image_url) }}";
+                imgPreview.style.display = 'block';
+                imgPreview.src = oldImage;
+            }
+        }
 </script>
 @endsection

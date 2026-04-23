@@ -65,11 +65,14 @@
                                                 </div>
                                                 <div class="form-file mb-3">
                                                     <label class="form-label">Gambar Logo Partner</label>
-                                                    <input type="file" name="gambar_partner" class="form-control"
-                                                        accept="image/*" aria-label="file example">
+                                                    <input type="file" name="gambar_partner" id="gambar_partner" class="form-control"
+                                                        accept="image/*" aria-label="file example" onchange="previewPartner()">
                                                     @error('gambar_partner')
                                                         <div class="text-danger">{{ $message }}</div>
                                                     @enderror
+                                                    <div class="mt-2">
+                                                        <img id="img-preview-partner" style="width:150px;height:150px;object-fit:contain;display:none;border:1px solid #ddd;" alt="Preview">
+                                                    </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <button class="btn btn-primary" type="submit">Simpan Data</button>
@@ -85,4 +88,19 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('scripts')
+<script>
+    function previewPartner() {
+        var input = document.getElementById('gambar_partner');
+        var preview = document.getElementById('img-preview-partner');
+        if (input.files && input.files[0]) {
+            WebPConverter.convertToWebP(input.files[0]).then(function(blob) {
+                preview.src = URL.createObjectURL(blob);
+                preview.style.display = 'block';
+            });
+        }
+    }
+</script>
 @endsection

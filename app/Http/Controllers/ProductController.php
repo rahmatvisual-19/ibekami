@@ -37,7 +37,7 @@ class ProductController extends Controller
                 'kategori_produk' => 'required|exists:categories,id',
                 'deskripsi_produk' => 'required|string',
                 'gambar_produk' => 'required|array',
-                'gambar_produk.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048'
+                'gambar_produk.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120'
             ],
             [
                 'nama_produk.required' => 'Nama Produk Tidak Boleh Kosong !',
@@ -46,8 +46,8 @@ class ProductController extends Controller
                 'deskripsi_produk.required' => 'Deskripsi Produk Tidak Boleh Kosong !',
                 'gambar_produk.required' => 'Gambar Produk Tidak Boleh Kosong !',
                 'gambar_produk.*.image' => 'Semua file harus berupa gambar !',
-                'gambar_produk.*.mimes' => 'Format gambar harus: png, jpg, jpeg !',
-                'gambar_produk.*.max' => 'Ukuran maksimal 2Mb !'
+                'gambar_produk.*.mimes' => 'Format gambar harus: png, jpg, jpeg, webp !',
+                'gambar_produk.*.max' => 'Ukuran maksimal 5Mb !'
             ],
         );
 
@@ -64,7 +64,9 @@ class ProductController extends Controller
         $type_name = Category::find($request->kategori_produk)->name ?? "";
 
         foreach ($request->file('gambar_produk') as $image) {
-            $filename = $type_name . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            // Use extension derived from actual MIME type to guarantee .webp when converted
+            $ext = $image->getClientOriginalExtension() ?: $image->extension();
+            $filename = $type_name . '_' . uniqid() . '.' . $ext;
             $image->storeAs('gambar_produk', $filename, 'public');
             $imagePaths[] = $filename;
         }
@@ -161,8 +163,9 @@ class ProductController extends Controller
         
         if ($request->hasFile('gambar_produk')) {
             foreach ($request->file('gambar_produk') as $image) {
-                $filename = $type_name . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $path = $image->storeAs('gambar_produk', $filename, 'public');
+                $ext = $image->getClientOriginalExtension() ?: $image->extension();
+                $filename = $type_name . '_' . uniqid() . '.' . $ext;
+                $image->storeAs('gambar_produk', $filename, 'public');
                 $newImagePaths[] = $filename;
             }
         }

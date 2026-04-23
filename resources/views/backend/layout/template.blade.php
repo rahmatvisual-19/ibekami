@@ -188,6 +188,7 @@
 <!-- dashboard-custom js -->
 <script src="{{asset('backend/js/pages/dashboard-analytics.js')}}"></script>
 
+<script src="{{ asset('backend/js/webp-converter.js') }}"></script>
 <script src="{{ asset('backend/js/main.js') }}"></script>
 
 

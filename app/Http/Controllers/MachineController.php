@@ -19,14 +19,14 @@ class MachineController extends Controller
     {
         $request->validate([
             'machine_title' => 'required|min:4',
-            'machine_picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048'
+            'machine_picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120'
         ],[
             'machine_title.required' => 'Title cannot be empty',
             'machine_title.min' => 'Input at least 4 characters for the title',
             'machine_picture.required' => 'Banner Picture cannot be empty',
             'machine_picture.image' => 'The file must be an image',
-            'machine_picture.mimes' => 'File formats must be jpg, png, jpeg, and webp',
-            'machine_picture.max' => 'Maximum file size is 2MB'
+            'machine_picture.mimes' => 'File formats must be jpg, png, jpeg, webp',
+            'machine_picture.max' => 'Maximum file size is 5MB'
         ]);
 
         $machine = new Machine;
@@ -36,7 +36,8 @@ class MachineController extends Controller
 
         if($request->hasFile('machine_picture')){
             $file=$request->file('machine_picture');
-            $fileName=uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: $file->extension();
+            $fileName=uniqid() . '.' . $ext;
             $file->storeAs('machine_picture', $fileName, 'public');
             $machine->image_url = $fileName;
         }
@@ -68,13 +69,13 @@ class MachineController extends Controller
     {
         $validated = $request->validate([
             'nama_mesin' => 'required|min:3',
-            'gambar_mesin' => 'nullable|image|max:2048', // Mengizinkan tidak mengubah gambar
+            'gambar_mesin' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ], [
             'nama_mesin.required' => 'Judul harus diisi',
             'gambar_mesin.image' => 'Harus foto/gambar',
             'nama_mesin.min' => 'Judul minimal 3 karakter',
-            
-            'gambar_mesin.max' => 'Ukuran maksimal 2Mb',
+            'gambar_mesin.mimes' => 'Format harus jpg/jpeg/png/webp',
+            'gambar_mesin.max' => 'Ukuran maksimal 5Mb',
         ]);
 
         $machine = Machine::findOrFail($id);
@@ -82,14 +83,14 @@ class MachineController extends Controller
 
         if ($request->hasFile('gambar_mesin')) {
             $file = $request->file('gambar_mesin');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: $file->extension();
+            $fileName = uniqid() . '.' . $ext;
 
             if ($machine->image_url) {
                 $this->deleteImageFile($machine->image_url);
             }
 
-            $file->storeAs('public/machine_picture', $fileName);
-
+            $file->storeAs('machine_picture', $fileName, 'public');
             $machine->image_url = $fileName;
         }
 

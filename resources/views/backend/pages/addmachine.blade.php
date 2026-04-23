@@ -76,11 +76,14 @@
               
                                                 <div class="form-file mb-3">
                                                     <label class="form-label">Machine Picture</label>
-                                                    <input type="file" name="machine_picture" class="form-control"
-                                                        aria-label="file example" accept="image/*"><em property="italic" style="color: red; size: 5px;">Make sure the image resolution is 1280px:720px</em>
+                                                    <input type="file" name="machine_picture" id="machine_picture" class="form-control"
+                                                        aria-label="file example" accept="image/*" onchange="previewMachine()"><em property="italic" style="color: red; size: 5px;">Make sure the image resolution is 1280px:720px</em>
                                                     @error('machine_picture')
                                                         <div class="text-danger">{{ $message }}</div>
                                                     @enderror
+                                                    <div class="mt-2">
+                                                        <img id="img-preview-machine" style="width:150px;height:150px;object-fit:contain;display:none;border:1px solid #ddd;" alt="Preview">
+                                                    </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <button class="btn btn-primary" type="submit">Save Data</button>
@@ -96,4 +99,19 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('scripts')
+<script>
+    function previewMachine() {
+        var input = document.getElementById('machine_picture');
+        var preview = document.getElementById('img-preview-machine');
+        if (input.files && input.files[0]) {
+            WebPConverter.convertToWebP(input.files[0]).then(function(blob) {
+                preview.src = URL.createObjectURL(blob);
+                preview.style.display = 'block';
+            });
+        }
+    }
+</script>
 @endsection

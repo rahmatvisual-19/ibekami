@@ -19,12 +19,13 @@ class PartnershipController extends Controller
         //Validate
         $request -> validate([
             'category' => 'required',
-            'gambar_partner' => 'required|image|mimes:png,jpg,jpeg|max:2048'
+            'gambar_partner' => 'required|image|mimes:png,jpg,jpeg,webp|max:5120'
         ],[
             'category.required' => 'Jenis partner tidak boleh kosong',
             'gambar_partner.required' => 'Gambar Partner Tidak Boleh Kosong !',
             'gambar_partner.image' => 'Format File Harus Berupa Gambar !',
-            'gambar_partner.max' => 'Ukurang File Gambar Maksimal 2Mb !',
+            'gambar_partner.mimes' => 'Format harus png/jpg/jpeg/webp !',
+            'gambar_partner.max' => 'Ukuran File Gambar Maksimal 5Mb !',
         ]);
 
         $partners = new Partnership;
@@ -33,7 +34,8 @@ class PartnershipController extends Controller
         if($request->hasFile('gambar_partner'))
         {
             $file=$request->file('gambar_partner');
-            $fileName=uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: $file->extension();
+            $fileName=uniqid() . '.' . $ext;
             
             $file->storeAs('gambar_partner', $fileName, 'public');
 
@@ -69,12 +71,12 @@ class PartnershipController extends Controller
     {
         $validated = $request->validate([
             'category' => 'required',
-            'gambar_partner' => 'required|image|mimes:png,jpg,jpeg|max:2048'
+            'gambar_partner' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:5120'
         ],[
             'category.required' => 'Jenis partner tidak boleh kosong',
-            'gambar_partner.required' => 'Gambar Partner Tidak Boleh Kosong !',
             'gambar_partner.image' => 'Format File Harus Berupa Gambar !',
-            'gambar_partner.max' => 'Ukurang File Gambar Maksimal 2Mb !',
+            'gambar_partner.mimes' => 'Format harus png/jpg/jpeg/webp !',
+            'gambar_partner.max' => 'Ukuran File Gambar Maksimal 5Mb !',
         ]);
 
         $partner = Partnership::findOrfail($id);
@@ -83,13 +85,14 @@ class PartnershipController extends Controller
         if($request->hasFile('gambar_partner'))
         {
             $file=$request->file('gambar_partner');
-            $fileName=uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: $file->extension();
+            $fileName=uniqid() . '.' . $ext;
 
             if ($partner->image_url) {
                 $this->deleteImageFile($partner->image_url);
             }
             
-            $file->storeAs('public/gambar_partner', $fileName);
+            $file->storeAs('gambar_partner', $fileName, 'public');
 
             $partner->image_url = $fileName;
         }

@@ -24,3 +24,9 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Ensure WebP files are served with the correct MIME type
+# This guarantees browsers treat .webp as image/webp, enabling "Save Image As .webp"
+<IfModule mod_mime.c>
+    AddType image/webp .webp
+</IfModule>

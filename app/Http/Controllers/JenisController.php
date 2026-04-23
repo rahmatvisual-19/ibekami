@@ -17,15 +17,15 @@ class JenisController extends Controller
     {
         $request->validate([
             'nama_jenis' => 'required|min:3',
-            'gambar_jenis' => 'required|image|mimes:png,jpg,jpeg|max:2048',
+            'gambar_jenis' => 'required|image|mimes:png,jpg,jpeg,webp|max:5120',
             
         ], [
             'nama_jenis.required' => 'Judul harus diisi',
             'gambar_jenis.required' => 'Gambar harus diisi',
             'nama_jenis.min' => 'Judul minimal 3 karakter',
-            'gambar_jenis.mimes' => 'Format Gambar harus png/jpg/jpeg',
+            'gambar_jenis.mimes' => 'Format Gambar harus png/jpg/jpeg/webp',
             'gambar_jenis.image' => 'Harus foto/gambar',
-            'gambar_jenis.max' => 'Ukuran maksimal 2Mb',
+            'gambar_jenis.max' => 'Ukuran maksimal 5Mb',
         ]);
 
         $jenis = new Type;
@@ -34,7 +34,8 @@ class JenisController extends Controller
 
         if ($request->hasFile('gambar_jenis')) {
             $file = $request->file('gambar_jenis');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: $file->extension();
+            $fileName = uniqid() . '.' . $ext;
             $file->storeAs('gambar_jenis', $fileName, 'public');
             $jenis->image_url = $fileName;
         }
@@ -66,13 +67,13 @@ class JenisController extends Controller
     {
         $validated = $request->validate([
             'nama_jenis' => 'required|min:3',
-            'gambar_jenis' => 'nullable|image|mimes:png,jpg,jpeg|max:2048', // Mengizinkan tidak mengubah gambar
+            'gambar_jenis' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:5120',
         ], [
             'nama_jenis.required' => 'Judul harus diisi',
             'gambar_jenis.image' => 'Harus foto/gambar',
             'nama_jenis.min' => 'Judul minimal 3 karakter',
-            'gambar_jenis.mimes' => 'Format Gambar harus png/jpg/jpeg',
-            'gambar_jenis.max' => 'Ukuran maksimal 2Mb',
+            'gambar_jenis.mimes' => 'Format Gambar harus png/jpg/jpeg/webp',
+            'gambar_jenis.max' => 'Ukuran maksimal 5Mb',
         ]);
 
         $jenis = Type::findOrFail($id);
@@ -80,14 +81,14 @@ class JenisController extends Controller
 
         if ($request->hasFile('gambar_jenis')) {
             $file = $request->file('gambar_jenis');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: $file->extension();
+            $fileName = uniqid() . '.' . $ext;
 
             if ($jenis->image_url) {
                 $this->deleteImageFile($jenis->image_url);
             }
 
-            $file->storeAs('public/gambar_jenis', $fileName);
-
+            $file->storeAs('gambar_jenis', $fileName, 'public');
             $jenis->image_url = $fileName;
         }
 

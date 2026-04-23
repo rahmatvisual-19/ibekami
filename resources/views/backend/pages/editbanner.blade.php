@@ -43,7 +43,8 @@
                                                     <div class="form-file mb-3">
                                                         <label class="form-label">Update Video or Image</label>
                                                         <input type="file" id="banner_picture" name="banner_picture" class="form-control @error('banner_picture') is-invalid @enderror"
-                                                            aria-label="file example" accept="image/*,video/mp4,video/webm" onchange="previewMedia()">
+                                                            aria-label="file example" accept="image/*,video/mp4,video/webm"
+                                                            data-skip-webp="true" onchange="previewMedia()">
                                                         <em style="color: red; font-size: 13px;">Make sure the resolution is vertical (9:16) like 720x1280px for the best result.</em>
                                                         @error('banner_picture')
                                                             <div class="text-danger">{{ $message }}</div>
@@ -92,21 +93,18 @@
 
             if (input.files && input.files[0]) {
                 const file = input.files[0];
-                const reader = new FileReader();
 
-                reader.onload = function(e) {
-                    if (file.type.startsWith('video/')) {
-                        imgPreview.style.display = 'none';
-                        videoPreview.style.display = 'block';
-                        videoPreview.src = e.target.result;
-                    } else {
+                if (file.type.startsWith('video/')) {
+                    imgPreview.style.display = 'none';
+                    videoPreview.style.display = 'block';
+                    videoPreview.src = URL.createObjectURL(file);
+                } else {
+                    WebPConverter.convertToWebP(file).then(function(blob) {
                         videoPreview.style.display = 'none';
                         imgPreview.style.display = 'block';
-                        imgPreview.src = e.target.result;
-                    }
-                };
-
-                reader.readAsDataURL(file);
+                        imgPreview.src = URL.createObjectURL(blob);
+                    });
+                }
             }
         }
     </script>

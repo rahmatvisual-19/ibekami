@@ -59,7 +59,8 @@
                                                 <div class="form-file mb-3">
                                                     <label class="form-label">Upload Video or Image</label>
                                                     <input type="file" name="banner_picture" class="form-control"
-                                                        aria-label="file example" accept="image/*,video/mp4,video/webm">
+                                                        aria-label="file example" accept="image/*,video/mp4,video/webm"
+                                                        data-skip-webp="true">
                                                     <em style="color: red; font-size: 13px;">Make sure the resolution is vertical (9:16) like 720x1280px for the best result.</em>
                                                     @error('banner_picture')
                                                         <div class="text-danger">{{ $message }}</div>
