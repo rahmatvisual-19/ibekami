@@ -18,37 +18,30 @@
 
 @section('content')
 
-        <!-- CSS KHUSUS UNTUK HERO CAROUSEL -->
+        <!-- CSS KHUSUS UNTUK HERO CAROUSEL & PRODUCT CARD -->
         <style>
+            /* =============================================
+               HERO ACCORDION CAROUSEL
+            ============================================= */
+
             /* Animasi masuk (Jatuh dari atas dengan pantulan / spring bounce) */
             @keyframes dropInPanel {
-                0% {
-                    transform: translateY(-100vh);
-                    opacity: 0;
-                }
-                70% {
-                    transform: translateY(20px);
-                    opacity: 1;
-                }
-                85% {
-                    transform: translateY(-10px);
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
+                0%   { transform: translateY(-100vh); opacity: 0; }
+                70%  { transform: translateY(20px);   opacity: 1; }
+                85%  { transform: translateY(-10px);  opacity: 1; }
+                100% { transform: translateY(0);      opacity: 1; }
             }
 
             .hero-accordion-carousel {
                 width: 100%;
-                height: calc(100vh - 90px); /* Disesuaikan agar pas layar tanpa scroll berlebih */
+                height: calc(100vh - 90px);
                 display: flex;
                 flex-direction: row;
                 overflow: hidden;
                 background-color: #EFE9DA;
                 box-sizing: border-box;
             }
+
             .hero-panel {
                 flex: 1 0 0;
                 position: relative;
@@ -57,11 +50,12 @@
                 flex-direction: column;
                 z-index: 1;
                 min-width: 0;
-                
-                /* Setting awal untuk animasi masuk */
+
+                /* Animasi masuk — opacity mulai 0 */
                 opacity: 0;
                 animation: dropInPanel 0.9s ease-in-out forwards;
             }
+
             .hero-panel-img {
                 position: absolute;
                 inset: 0;
@@ -71,15 +65,125 @@
                 z-index: 1;
             }
 
-            /* Tampilan Handphone (Grid 2x2) */
+            /* Tampilan Mobile — Grid 2×2 */
             @media (max-width: 768px) {
                 .hero-accordion-carousel {
-                    flex-wrap: wrap; /* Mengizinkan elemen membungkus ke baris bawah */
+                    flex-wrap: wrap;
                 }
                 .hero-panel {
-                    flex: 0 0 50%; /* Memaksa lebar 50% (2 kolom) */
-                    height: 50%;   /* Memaksa tinggi 50% (2 baris) */
+                    flex: 0 0 50%;
+                    height: 50%;
                 }
+            }
+
+            /* =============================================
+               PRODUCT CARD — OVERLAY & MOBILE BUTTON
+               FIX: konsistensi tampilan desktop vs mobile
+            ============================================= */
+
+            /* --- Overlay button (desktop hover) --- */
+            .product .thumb {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .product .thumb .overlay-button {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 12px;
+                background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%);
+                opacity: 0;
+                transform: translateY(8px);
+                transition: opacity 0.25s ease, transform 0.25s ease;
+                z-index: 5;
+            }
+
+            .product .thumb:hover .overlay-button {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            /* Sembunyikan overlay-button di mobile (touch device) karena hover tidak tersedia */
+            @media (max-width: 768px) {
+                .product .thumb .overlay-button {
+                    display: none !important;
+                }
+            }
+
+            /* --- Mobile button (di bawah card) --- */
+            /* Tampilkan hanya di mobile */
+            .product .mobile-view {
+                display: none;
+            }
+
+            @media (max-width: 768px) {
+                .product .mobile-view {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 8px;
+                }
+
+                /* Tombol mobile: full-width, konsisten */
+                .product .mobile-view .add-cart {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    white-space: nowrap;
+                }
+
+                .product .mobile-view .add-cart p {
+                    margin: 0;
+                    line-height: 1;
+                }
+            }
+
+            /* Desktop: sembunyikan mobile-view */
+            @media (min-width: 769px) {
+                .product .mobile-view {
+                    display: none !important;
+                }
+
+                /* Pastikan overlay button tampil saat hover di desktop */
+                .product .thumb .overlay-button {
+                    display: flex;
+                }
+            }
+
+            /* --- Konsistensi ukuran button di overlay (desktop) --- */
+            .product .thumb .overlay-button .add-cart {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 13px;
+                padding: 8px 16px;
+                border-radius: 4px;
+                white-space: nowrap;
+            }
+
+            .product .thumb .overlay-button .add-cart p {
+                margin: 0;
+                line-height: 1;
+            }
+
+            /* =============================================
+               STAR RATING — FIX: bintang kosong vs penuh
+            ============================================= */
+            .review-stars .star {
+                color: #FFC107; /* kuning — bintang penuh */
+            }
+
+            .review-stars .star-empty {
+                color: #D1D5DB; /* abu — bintang kosong */
             }
         </style>
         <!-- AKHIR CSS KHUSUS -->
@@ -87,37 +191,53 @@
         @include('layout.partials.navbar')
 
         <!-- ========================================== -->
-        <!-- HERO SECTION CAROUSEL (NATIVE LARAVEL / HTML+CSS) -->
+        <!-- HERO SECTION CAROUSEL -->
         <!-- ========================================== -->
         <div class="hero-accordion-carousel">
             @php
-                // Array warna fallback untuk panel
                 $pastelColors = ['#e6e6e6', '#ff9c9c', '#fce0a2', '#d4fca4', '#b5d8ff'];
             @endphp
-            
+
             @foreach ($banners as $index => $banner)
                 @php
-                    $bgColor = $pastelColors[$index % count($pastelColors)];
-                    
-                    // Mengecek apakah file yang diupload adalah video
-                    $ext = strtolower(pathinfo($banner->image_url, PATHINFO_EXTENSION));
-                    $isVideo = in_array($ext, ['mp4', 'webm', 'ogg']);
+                    $bgColor  = $pastelColors[$index % count($pastelColors)];
+                    $ext      = strtolower(pathinfo($banner->image_url, PATHINFO_EXTENSION));
+                    $isVideo  = in_array($ext, ['mp4', 'webm', 'ogg']);
                 @endphp
-                
-                <!-- Menambahkan animation-delay berdasarkan index perulangan -->
-                <div class="hero-panel" style="background-color: {{ $bgColor }}; animation-delay: {{ $index * 0.15 }}s;">
+
+                <div class="hero-panel"
+                     style="background-color: {{ $bgColor }}; animation-delay: {{ $index * 0.15 }}s;">
+
                     @if(!empty($banner->image_url))
                         @if($isVideo)
-                            <video class="hero-panel-img" autoplay loop muted playsinline>
-                                <source src="{{ asset('storage/banner_picture/' . $banner->image_url) }}" type="video/{{ $ext == 'mp4' ? 'mp4' : $ext }}">
-                                Browser Anda tidak mendukung video ini.
-                            </video>
+                            @if($index === 0)
+                                {{-- Video pertama: autoplay langsung --}}
+                                <video class="hero-panel-img"
+                                       autoplay loop muted playsinline preload="metadata"
+                                       src="{{ asset('storage/banner_picture/' . $banner->image_url) }}">
+                                    <source src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
+                                            type="video/{{ $ext === 'mp4' ? 'mp4' : $ext }}">
+                                </video>
+                            @else
+                                {{-- Video lainnya: lazy-load via IntersectionObserver --}}
+                                <video class="hero-panel-img"
+                                       loop muted playsinline preload="none"
+                                       data-src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
+                                       data-type="video/{{ $ext === 'mp4' ? 'mp4' : $ext }}">
+                                </video>
+                            @endif
                         @else
                             @if($index === 0)
-                                {{-- Banner pertama: LCP image, jangan lazy load --}}
-                                <img class="hero-panel-img" src="{{ asset('storage/banner_picture/' . $banner->image_url) }}" alt="{{ $banner->title }}" fetchpriority="high">
+                                {{-- Gambar pertama (LCP): eager + high priority --}}
+                                <img class="hero-panel-img"
+                                     src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
+                                     alt="{{ $banner->title }}"
+                                     fetchpriority="high">
                             @else
-                                <img class="hero-panel-img" src="{{ asset('storage/banner_picture/' . $banner->image_url) }}" alt="{{ $banner->title }}" loading="lazy">
+                                <img class="hero-panel-img"
+                                     src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
+                                     alt="{{ $banner->title }}"
+                                     loading="lazy">
                             @endif
                         @endif
                     @endif
@@ -126,108 +246,184 @@
         </div>
         <!-- ========================================== -->
 
+        <script>
+        // Lazy-load video hero panels yang bukan panel pertama
+        (function () {
+            if (!('IntersectionObserver' in window)) return;
+            document.querySelectorAll('.hero-panel video[data-src]').forEach(function (video) {
+                var obs = new IntersectionObserver(function (entries, o) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        var v      = entry.target;
+                        var source = document.createElement('source');
+                        source.src  = v.dataset.src;
+                        source.type = v.dataset.type || 'video/mp4';
+                        v.appendChild(source);
+                        v.load();
+                        v.play().catch(function () {});
+                        o.unobserve(v);
+                    });
+                }, { threshold: 0.1 });
+                obs.observe(video);
+            });
+        })();
+        </script>
+
         <hr>
-        <!-- Promo Start -->
+
+        <!-- =============================================
+             PROMO SECTION
+        ============================================= -->
         <section id="promo">
-        <div class="section pt-100px pb-100px">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12 text-center" data-aos="fade-up">
-                        <div class="section-title mb-0">
-                            <h2 class="title">{{ __('home.hot_deals_title') }} <i class="fa-solid fa-fire" style="color: #ff7b00;"></i></h2>
-                            <p class="sub-title mb-30px">{{ __('home.hot_deals_sub') }}</p>
+            <div class="section pt-100px pb-100px">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center" data-aos="fade-up">
+                            <div class="section-title mb-0">
+                                <h2 class="title">
+                                    {{ __('home.hot_deals_title') }}
+                                    <i class="fa-solid fa-fire" style="color: #ff7b00;"></i>
+                                </h2>
+                                <p class="sub-title mb-30px">{{ __('home.hot_deals_sub') }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="category-slider swiper-container" data-aos="fade-up">
-                    <div class="category-wrapper swiper-wrapper">
-                        <!-- Single Category -->
-                        @foreach ($types as $type)
-                            <div class="swiper-slide">
-                                <a href="https://wa.me/{{ $admin_1 }}?text=Halo admin, saya mendapat info promo {{ $type->name }} dari website Ibekami.id, apakah promonya masih tersedia?"  target="_blank" class="category-inner ">
-                                    <div class="category-single-item">
-                                        <img src="{{ asset('storage/gambar_jenis/' . $type->image_url) }}" alt="">
-                                        <span class="promo-btn">{{ __('home.ask_details') }}</span>
-                                    </div>
-                                </a>
-                            </div>
-                        @endforeach
+                    <div class="category-slider swiper-container" data-aos="fade-up">
+                        <div class="category-wrapper swiper-wrapper">
+                            @foreach ($types as $type)
+                                <div class="swiper-slide">
+                                    <a href="https://wa.me/{{ $admin_1 }}?text=Halo admin, saya mendapat info promo {{ $type->name }} dari website Ibekami.id, apakah promonya masih tersedia?"
+                                       target="_blank"
+                                       class="category-inner">
+                                        <div class="category-single-item">
+                                            <img src="{{ asset('storage/gambar_jenis/' . $type->image_url) }}"
+                                                 alt="{{ $type->name }}"
+                                                 loading="lazy"
+                                                 width="200" height="200">
+                                            <span class="promo-btn">{{ __('home.ask_details') }}</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </section>
-        <!-- Promo End -->
 
-        <!-- Product tab Area Start -->
+        <!-- =============================================
+             PRODUCT TAB AREA
+             FIX: nama variable loop ($item), row closing
+        ============================================= -->
         <section id="new-product">
-        <div class="section product-tab-area">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12 text-center" data-aos="fade-up">
-                        <div class="section-title mb-0">
-                            <h2 class="title">{{ __('home.product_title') }}</h2>
-                            <p class="sub-title mb-30px">{{ __('home.product_sub') }}</p>
+            <div class="section product-tab-area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center" data-aos="fade-up">
+                            <div class="section-title mb-0">
+                                <h2 class="title">{{ __('home.product_title') }}</h2>
+                                <p class="sub-title mb-30px">{{ __('home.product_sub') }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="tab-content">
-                            <!-- 1st tab start -->
-                            <div class="tab-pane fade show active" id="tab-product-new-arrivals">
-                                <div class="row">
-                                    @foreach($product as $index => $product)
-                                        <div class="col-lg-3 col-md-6 col-sm-6 col-6 mb-30px" data-aos="fade-up">
-                                            <div class="product">
-                                                <div class="thumb">
-                                                    <a href="{{ route('product', $product->product_id) }}" class="image">
-                                                        @if(!empty($product->image_url))
-                                                            <img src="{{ asset('storage/gambar_produk/' . $product->image_url[0]) }}" alt="{{ $product->name }}" {{ $index < 4 ? 'loading="eager"' : 'loading="lazy"' }} />
-                                                            <img class="hover-image" src="{{ asset('storage/gambar_produk/' . $product->image_url[0]) }}" alt="{{ $product->name }}" loading="lazy" />
-                                                        @else
-                                                            <img src="{{ asset('images/no-image.png') }}" alt="{{ $product->name }}" {{ $index < 4 ? 'loading="eager"' : 'loading="lazy"' }} />
-                                                            <img class="hover-image" src="{{ asset('images/no-image.png') }}" alt="{{ $product->name }}" loading="lazy" />
-                                                        @endif
+                    <div class="row">
+                        <div class="col">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="tab-product-new-arrivals">
+                                    <div class="row">
 
-                                                    </a>
-                                                    <span class="overlay-button">
-                                                    <a href="{{ route('product', $product->product_id) }}">
-                                                        <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
-                                                            <i class="icon-magnifier"></i>
-                                                            <p>{{ __('home.discover_more') }}</p>
-                                                        </button>
-                                                    </a>
-                                                </span>
+                                        {{--
+                                            BUG FIX 1: Ganti nama variable loop dari $product menjadi $item
+                                            agar tidak menimpa collection $product (nama sama = bug PHP/Laravel).
+
+                                            BUG FIX 2: Pindahkan row-break ke DALAM loop dengan kondisi
+                                            yang benar sehingga tidak ada <div class="row"> kosong di akhir.
+                                        --}}
+                                        @foreach($product as $index => $item)
+
+                                            {{-- Row break setiap 4 item, KECUALI di item pertama --}}
+                                            @if($index > 0 && $index % 4 === 0)
+                                                    </div>{{-- tutup .row sebelumnya --}}
+                                                    <div class="row">
+                                            @endif
+
+                                            <div class="col-lg-3 col-md-6 col-sm-6 col-6 mb-30px" data-aos="fade-up">
+                                                <div class="product">
+                                                    <div class="thumb">
+                                                        <a href="{{ route('product', $item->product_id) }}" class="image">
+                                                            @if(!empty($item->image_url))
+                                                                <img src="{{ asset('storage/gambar_produk/' . $item->image_url[0]) }}"
+                                                                     alt="{{ $item->name }}"
+                                                                     width="400" height="400"
+                                                                     @if($index < 4)
+                                                                         loading="eager"
+                                                                         fetchpriority="{{ $index === 0 ? 'high' : 'auto' }}"
+                                                                     @else
+                                                                         loading="lazy"
+                                                                     @endif />
+                                                                <img class="hover-image"
+                                                                     src="{{ asset('storage/gambar_produk/' . $item->image_url[0]) }}"
+                                                                     alt="{{ $item->name }}"
+                                                                     width="400" height="400"
+                                                                     loading="lazy"
+                                                                     aria-hidden="true" />
+                                                            @else
+                                                                <img src="{{ asset('images/no-image.png') }}"
+                                                                     alt="{{ $item->name }}"
+                                                                     width="400" height="400"
+                                                                     {{ $index < 4 ? 'loading="eager"' : 'loading="lazy"' }} />
+                                                                <img class="hover-image"
+                                                                     src="{{ asset('images/no-image.png') }}"
+                                                                     alt=""
+                                                                     width="400" height="400"
+                                                                     loading="lazy"
+                                                                     aria-hidden="true" />
+                                                            @endif
+                                                        </a>
+
+                                                        {{-- Overlay button: hanya tampil di desktop saat hover --}}
+                                                        <span class="overlay-button">
+                                                            <a href="{{ route('product', $item->product_id) }}">
+                                                                <button class="add-cart btn btn-primary btn-hover-primary">
+                                                                    <i class="icon-magnifier"></i>
+                                                                    <p>{{ __('home.discover_more') }}</p>
+                                                                </button>
+                                                            </a>
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="content">
+                                                        <h5 class="title">
+                                                            <a href="{{ route('product', $item->product_id) }}">{{ $item->name }}</a>
+                                                        </h5>
+                                                    </div>
+
+                                                    {{-- Mobile button: hanya tampil di mobile, di bawah nama produk --}}
+                                                    <span class="mobile-view">
+                                                        <a href="{{ route('product', $item->product_id) }}">
+                                                            <button class="add-cart btn btn-primary btn-hover-primary">
+                                                                <i class="icon-magnifier"></i>
+                                                                <p>{{ __('home.discover_more') }}</p>
+                                                            </button>
+                                                        </a>
+                                                    </span>
                                                 </div>
-                                                <div class="content">
-                                                    <h5 class="title"><a >{{ $product->name }}</a></h5>
-                                                </div>
-                                                <span class="mobile-view">
-                                                    <a href="{{ route('product', $product->product_id) }}">
-                                                        <button id="order-btn" class="add-cart btn btn-primary btn-hover-primary ml-4">
-                                                            <i class="icon-magnifier"></i>
-                                                            <p>{{ __('home.discover_more') }}</p>
-                                                        </button>
-                                                    </a>
-                                                </span>
                                             </div>
-                                        </div>
-                                        @if(($index + 1) % 4 == 0)
-                                            </div>
-                                            <div class="row">
-                                        @endif
-                                    @endforeach
+
+                                        @endforeach
+
+                                    </div>{{-- akhir .row terakhir --}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         </section>
-        <!-- Product tab Area End -->
-        <!-- Banner Section Start -->
+
+        <!-- =============================================
+             BANNER SECTION
+        ============================================= -->
         <div class="section pb-100px pt-100px">
             <div class="container">
                 <div class="row">
@@ -238,16 +434,17 @@
                         </div>
                     </div>
                 </div>
-                <!-- Banners Start -->
                 <div class="row">
-                    <!-- Banner Start -->
                     <div class="col-lg-6 col-12 mb-md-30px mb-lm-30px" data-aos="fade-up" data-aos-delay="200">
                         <a href="#" class="banner">
                             <div class="banner-container">
-                                <img src="images/banner/tokped-nocapt.jpg" alt="" />
+                                <img src="images/banner/tokped-nocapt.jpg"
+                                     alt="Tokopedia Banner"
+                                     loading="lazy"
+                                     width="600" height="300" />
                                 <div class="overlay-text-1">
                                     <div class="up">
-                                        <h2>PLAQUES & <br> SOUVENIRS </h2>
+                                        <h2>PLAQUES &amp; <br> SOUVENIRS</h2>
                                         <p>ETC.</p>
                                     </div>
                                     <div class="down">
@@ -258,13 +455,13 @@
                             </div>
                         </a>
                     </div>
-                    <!-- Banner End -->
-
-                    <!-- Banner Start -->
                     <div class="col-lg-6 col-12" data-aos="fade-up" data-aos-delay="400">
                         <a href="#" class="banner">
                             <div class="banner-container">
-                                <img src="images/banner/shope-nocapt.jpg" alt="Shopee Banner" />
+                                <img src="images/banner/shope-nocapt.jpg"
+                                     alt="Shopee Banner"
+                                     loading="lazy"
+                                     width="600" height="300" />
                                 <div class="overlay-text">
                                     <h2>{!! __('home.free_shipping') !!}</h2>
                                     <h3>{!! __('home.for_all_products') !!}</h3>
@@ -272,21 +469,19 @@
                             </div>
                         </a>
                     </div>
-                    <!-- Banner End -->
                 </div>
-                <!-- Banners End -->
             </div>
         </div>
-        <!-- Banner Section End -->
 
-        <!-- Testimony Area Start -->
+        <!-- =============================================
+             TESTIMONY AREA
+             FIX: class bintang kosong → star-empty
+        ============================================= -->
         <div class="section testimonial-section">
             <h1 class="main-heading">{{ __('home.testimony_title') }}</h1>
-            {{-- <div class="divider"></div> --}}
             <div class="testimonial-person-slider swiper-container">
                 <div class="testimony-wrapper swiper-wrapper">
                     @foreach ($testimonies as $testimony)
-                        {{-- Testimonial 1 --}}
                         <div class="swiper-slide">
                             <div class="review-card">
                                 <div class="review-header">
@@ -297,11 +492,14 @@
                                     </div>
                                 </div>
                                 <div class="review-stars">
+                                    {{-- Bintang penuh --}}
                                     @for ($i = 0; $i < $testimony->star; $i++)
                                         <span class="star"><i class="fa-solid fa-star"></i></span>
                                     @endfor
+                                    {{-- BUG FIX 3: Bintang kosong pakai class berbeda (star-empty)
+                                         agar dapat di-style abu-abu, bukan kuning --}}
                                     @for ($i = 0; $i < (5 - $testimony->star); $i++)
-                                        <span class="star"><i class="fa-solid fa-star"></i></span>
+                                        <span class="star-empty"><i class="fa-solid fa-star"></i></span>
                                     @endfor
                                 </div>
                                 <div class="review-text-container">
@@ -313,43 +511,94 @@
                 </div>
             </div>
         </div>
-        <!-- Testimony Area End -->
+
+        <!-- =============================================
+             SOCIAL MEDIA SECTION
+        ============================================= -->
         <div class="section pb-100px">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12" data-aos="fade-up">
-                <div class="section-title text-center mb-11">
-                    <h2 class="title">{{ __('home.social_title') }}</h2>
-                    <p class="sub-title">{!! __('home.social_sub') !!}</p>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12" data-aos="fade-up">
+                        <div class="section-title text-center mb-11">
+                            <h2 class="title">{{ __('home.social_title') }}</h2>
+                            <p class="sub-title">{!! __('home.social_sub') !!}</p>
+                        </div>
+                    </div>
                 </div>
+                <div class="insta-row">
+                    <div data-aos="fade-up" data-aos-delay="200">
+                        <div class="insta-wrapper">
+                            {{-- Thumbnail klik-untuk-main: video tidak dimuat sampai user klik --}}
+                            <div class="video-facade"
+                                 data-src="videos/instagram.mp4"
+                                 onclick="playFacadeVideo(this)"
+                                 style="position:relative;cursor:pointer;background:#000;aspect-ratio:9/16;overflow:hidden;border-radius:8px;">
+                                <img src="images/social/instagram-thumb.webp"
+                                     onerror="this.style.display='none'"
+                                     alt="Instagram @ibekami.id"
+                                     loading="lazy"
+                                     width="405" height="720"
+                                     style="width:100%;height:100%;object-fit:cover;opacity:0.85;">
+                                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                                        <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.45)"/>
+                                        <polygon points="26,20 50,32 26,44" fill="#fff"/>
+                                    </svg>
+                                </div>
+                                <a href="https://www.instagram.com/ibekami.id" target="_blank"
+                                   style="position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.7);pointer-events:auto;"
+                                   onclick="event.stopPropagation()">@ibekami.id &nbsp;▶ Instagram</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-aos="fade-up" data-aos-delay="400">
+                        <div class="insta-wrapper">
+                            <div class="video-facade"
+                                 data-src="videos/tiktok.mp4"
+                                 onclick="playFacadeVideo(this)"
+                                 style="position:relative;cursor:pointer;background:#000;aspect-ratio:9/16;overflow:hidden;border-radius:8px;">
+                                <img src="images/social/tiktok-thumb.webp"
+                                     onerror="this.style.display='none'"
+                                     alt="TikTok @ibekami.id"
+                                     loading="lazy"
+                                     width="405" height="720"
+                                     style="width:100%;height:100%;object-fit:cover;opacity:0.85;">
+                                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                                        <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.45)"/>
+                                        <polygon points="26,20 50,32 26,44" fill="#fff"/>
+                                    </svg>
+                                </div>
+                                <a href="https://www.tiktok.com/@ibekami.id" target="_blank"
+                                   style="position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.7);pointer-events:auto;"
+                                   onclick="event.stopPropagation()">@ibekami.id &nbsp;▶ TikTok</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                function playFacadeVideo(el) {
+                    var src   = el.dataset.src;
+                    var video = document.createElement('video');
+                    video.src         = src;
+                    video.autoplay    = true;
+                    video.loop        = true;
+                    video.muted       = true;
+                    video.playsinline = true;
+                    video.controls    = true;
+                    video.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
+                    el.innerHTML = '';
+                    el.appendChild(video);
+                    video.play();
+                }
+                </script>
             </div>
         </div>
-        <div class="insta-row">
-            <div data-aos="fade-up" data-aos-delay="200">
-                <div class="insta-wrapper">
-                    <a href="https://www.instagram.com/ibekami.id" class="instagram" target="_blank">
-                        <video class="w-100" autoplay loop muted playsinline>
-                            <source src="videos/instagram.mp4" type="video/mp4">
-                            {{ __('home.video_not_supported') }}
-                        </video>
-                    </a>
-                </div>
-            </div>
-            <div data-aos="fade-up" data-aos-delay="400">
-                <div class="insta-wrapper">
-                    <a href="https://www.tiktok.com/@ibekami.id" class="tiktok" target="_blank">
-                        <video class="w-100" autoplay loop muted playsinline>
-                            <source src="videos/tiktok.mp4" type="video/mp4">
-                            {{ __('home.video_not_supported') }}
-                        </video>
-                    </a>
-                </div>
-            </div>
-            
-        </div>
-    </div>
-</div>
-        <!-- Start Company Logo Section -->
+
+        <!-- =============================================
+             COMPANY LOGO / PARTNER SECTION
+        ============================================= -->
         <div class="company-logo-section pb-100px">
             <div class="company-logo-wrapper" data-aos="fade-up" data-aos-delay="0">
                 <div class="container">
@@ -363,9 +612,13 @@
                                     <div class="swiper-wrapper">
                                         @foreach ($bumnPartner as $partner)
                                             <div class="company-logo-single-item swiper-slide">
-                                                <div class="image" style="height: 80px; width: 80px"><img class="img-fluid"
-                                                        style="object: fit-content;"
-                                                        src="{{ asset('storage/gambar_partner/' . $partner->image_url) }}" alt="">
+                                                <div class="image" style="height:80px;width:80px;">
+                                                    <img class="img-fluid"
+                                                         style="object-fit:contain;"
+                                                         src="{{ asset('storage/gambar_partner/' . $partner->image_url) }}"
+                                                         alt="{{ $partner->name ?? '' }}"
+                                                         loading="lazy"
+                                                         width="80" height="80">
                                                 </div>
                                             </div>
                                         @endforeach
@@ -377,9 +630,13 @@
                                     <div class="swiper-wrapper">
                                         @foreach ($orgPartner as $partner)
                                             <div class="company-logo-single-item swiper-slide">
-                                                <div class="image" style="height: 80px; width: 80px"><img class="img-fluid"
-                                                        style="object: fit-content;" src="{{ asset('storage/gambar_partner/' . $partner->image_url) }}"
-                                                        alt="">
+                                                <div class="image" style="height:80px;width:80px;">
+                                                    <img class="img-fluid"
+                                                         style="object-fit:contain;"
+                                                         src="{{ asset('storage/gambar_partner/' . $partner->image_url) }}"
+                                                         alt="{{ $partner->name ?? '' }}"
+                                                         loading="lazy"
+                                                         width="80" height="80">
                                                 </div>
                                             </div>
                                         @endforeach
@@ -391,5 +648,5 @@
                 </div>
             </div>
         </div>
-    </div>
+
 @endsection

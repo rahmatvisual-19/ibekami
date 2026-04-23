@@ -41,7 +41,10 @@
                         <div class="swiper-wrapper">
                             @foreach ($product->image_url as $image)
                                 <div class="swiper-slide zoom-image-hover">
-                                    <img class="img-responsive m-auto" src="{{ asset('storage/gambar_produk/' . $image) }}" alt="">
+                                    <img class="img-responsive m-auto"
+                                         src="{{ asset('storage/gambar_produk/' . $image) }}"
+                                         alt="{{ $product->name }}"
+                                         loading="lazy" decoding="async" width="800" height="800">
                                 </div>
                             @endforeach
                         </div>
@@ -51,7 +54,10 @@
                             <div class="swiper-wrapper">
                                 @foreach ($product->image_url as $image)
                                     <div class="swiper-slide">
-                                        <img class="img-responsive m-auto" src="{{ asset('storage/gambar_produk/' . $image) }}" alt="">
+                                        <img class="img-responsive m-auto"
+                                             src="{{ asset('storage/gambar_produk/' . $image) }}"
+                                             alt="{{ $product->name }}"
+                                             loading="lazy" decoding="async" width="120" height="120">
                                     </div>
                                 @endforeach
                             </div>

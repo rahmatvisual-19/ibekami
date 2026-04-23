@@ -42,21 +42,14 @@
                                         <div class="product">
                                             <div class="thumb">
                                                 <a href="#" class="image">
-                                                    <img src="{{ asset('storage/machine_picture/' . $item->image_url) }}" alt="" />
-                                                    <img class="hover-image" src="{{ asset('storage/machine_picture/' . $item->image_url) }}" alt="#" />
+                                                    <img src="{{ asset('storage/machine_picture/' . $item->image_url) }}"
+                                                         alt="{{ $item->title }}"
+                                                         loading="lazy" width="600" height="338" />
                                                 </a>
-                                                <span class="overlay-button">
-                                                    
-                                                </span>
                                             </div>
                                             <div class="content">
                                                 <h5 class="title"><a href="#">{{ $item->title }}</a></h5>
                                             </div>
-                                            <span class="mobile-view">
-                                                <a href="#">
-                                                    
-                                                </a>
-                                            </span>
                                         </div>
                                     </div>
                                 @endforeach

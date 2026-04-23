@@ -13,9 +13,9 @@ class ProductController extends Controller
 {
     public function index(): View
     {   
-        $products = Product::all()->map(function($product) {
-            $product->type_name = Type::find($product->product_type)->name ?? "N/A";
-            $product->category_name = Category::find($product->category_type)->name ?? "N/A";
+        $products = Product::with(['type', 'category'])->get()->map(function($product) {
+            $product->type_name     = $product->type->name     ?? 'N/A';
+            $product->category_name = $product->category->name ?? 'N/A';
             return $product;
         });
         return view('backend.pages.Product', compact('products'));

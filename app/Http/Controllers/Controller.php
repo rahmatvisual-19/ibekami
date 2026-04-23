@@ -11,46 +11,26 @@ use App\Models\Machine;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Controller extends BaseController
 {
     public function home()
     {
-
-
-        $types = Type::all();
-
+        $types    = Type::all();
+        $banners  = Banner::all();
         $partners = Partnership::all();
 
-        $testimonies = Review::all();
-
-        $banners = Banner::all();
-
-        $product = collect();
-
-        $productTypes = Product::select('product_type')->distinct()->pluck('product_type');
-        
         $bumnPartner = $partners->where('category', 'BUMN');
-        $orgPartner = $partners->where('category', 'Organization');
+        $orgPartner  = $partners->where('category', 'Organization');
 
-        //Menampilkan Produk baru diupload
-        // foreach ($productTypes as $type) {
-        //     $produkPerType = Product::where('product_type', $type)
-        //         ->latest()
-        //         ->take(2)
-        //         ->get();
+        $product = Product::where('status', 'Aktif')
+            ->select('product_id', 'name', 'image_url', 'product_type', 'status')
+            ->get();
 
-        //     $products = $products->merge($produkPerType);
-        // }
-
-        //Menampilkan produk yg aktif
-        $product = Product::where('status', 'Aktif')->get();
-
-        $formattedTestimonies = $testimonies->map(function($testimony) {
-            $testimony->initial = strtoupper(substr($testimony->name, 0, 1));
-            $testimony->formattedDate = Carbon::parse($testimony->review_date)->diffForHumans();
+        $testimonies = Review::all()->map(function ($testimony) {
+            $testimony->initial       = strtoupper(substr($testimony->name, 0, 1));
+            $testimony->formattedDate = \Illuminate\Support\Carbon::parse($testimony->review_date)->diffForHumans();
             return $testimony;
         });
 
