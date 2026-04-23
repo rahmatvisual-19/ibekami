@@ -42,10 +42,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <!-- Preload CSS utama agar tidak terlambat -->
-    <link rel="preload" href="{{ asset('css/style.css') }}" as="style">
-    <link rel="preload" href="{{ asset('css/vendor/bootstrap.min.css') }}" as="style">
-
     <!-- Preload LCP image (banner pertama) — diisi dinamis via blade jika tersedia -->
     @yield('preload_lcp')
 
@@ -71,8 +67,12 @@
         section{display:block}
     </style>
 
-    <!-- CSS Vendor & Plugins — async load (non-blocking) -->
-    <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}" media="print" onload="this.media='all'">
+    <!-- CSS Inti — blocking (wajib ada sebelum render) -->
+    <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/testimony.css') }}">
+
+    <!-- CSS Plugin — async load (tidak kritis untuk render awal) -->
     <link rel="stylesheet" href="{{ asset('css/vendor/simple-line-icons.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ asset('css/vendor/ionicons.min.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ asset('css/plugins/animate.css') }}" media="print" onload="this.media='all'">
@@ -81,7 +81,6 @@
     <link rel="stylesheet" href="{{ asset('css/plugins/nice-select.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ asset('css/plugins/venobox.css') }}" media="print" onload="this.media='all'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/vendor/simple-line-icons.css') }}">
         <link rel="stylesheet" href="{{ asset('css/vendor/ionicons.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/plugins/animate.css') }}">
@@ -95,16 +94,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
-    <!-- Google Fonts — hanya 2 font yang paling dipakai -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-
-    <!-- Main Style — async load -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="{{ asset('css/testimony.css') }}" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/testimony.css') }}">
-    </noscript>
+    <!-- Google Fonts — async load dengan display=swap -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"></noscript>
 
     <!-- GTM + GA: Load on Interaction (scroll/click/touch) — TBT Fix -->
     <script>
