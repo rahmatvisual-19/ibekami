@@ -8203,3 +8203,37 @@ li {
     color: #fff;
     background-color: rgba(255, 255, 255, 0.2);
 }
+
+/* Offcanvas lang toggle */
+.lang-toggle--offcanvas {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+}
+
+.lang-toggle--offcanvas .lang-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: #474747;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.lang-toggle--offcanvas .lang-btn:hover {
+    color: #ff7004;
+}
+
+.lang-toggle--offcanvas .lang-btn.active {
+    color: #b25533;
+    background-color: rgba(178, 85, 51, 0.08);
+    pointer-events: none;
+}
+
+.lang-toggle--offcanvas .lang-divider {
+    color: #ccc;
+    user-select: none;
+}

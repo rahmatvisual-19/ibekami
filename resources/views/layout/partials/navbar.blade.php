@@ -21,6 +21,11 @@
                     <button><i class="fa fa-search"></i></button>
                 </form>
             </div>
+            <div class="lang-toggle lang-toggle--mobile">
+                <a href="{{ route('lang.switch', 'id') }}" class="lang-btn {{ app()->getLocale() === 'id' ? 'active' : '' }}">ID</a>
+                <span class="lang-divider">|</span>
+                <a href="{{ route('lang.switch', 'en') }}" class="lang-btn {{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</a>
+            </div>
             <a href="#offcanvas-mobile-menu" class="header-action-btn header-action-btn-menu offcanvas-toggle d-lg-none">
                 <i class="icon-menu"></i>
             </a>
@@ -68,6 +73,11 @@
                         <button type="button"><i class="fa fa-search"></i></button>
                     </form>
                 </div>
+                <div class="lang-toggle">
+                    <a href="{{ route('lang.switch', 'id') }}" class="lang-btn {{ app()->getLocale() === 'id' ? 'active' : '' }}">ID</a>
+                    <span class="lang-divider">|</span>
+                    <a href="{{ route('lang.switch', 'en') }}" class="lang-btn {{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</a>
+                </div>
             </div>
         </div>
     </div>
@@ -79,6 +89,11 @@
 <div id="offcanvas-mobile-menu" class="offcanvas offcanvas-mobile-menu">
     <button class="offcanvas-close"></button>
     <div class="inner customScroll">
+        <div class="lang-toggle lang-toggle--offcanvas" style="padding: 16px 20px 0;">
+            <a href="{{ route('lang.switch', 'id') }}" class="lang-btn {{ app()->getLocale() === 'id' ? 'active' : '' }}">🇮🇩 Indonesia</a>
+            <span class="lang-divider" style="margin: 0 8px;">|</span>
+            <a href="{{ route('lang.switch', 'en') }}" class="lang-btn {{ app()->getLocale() === 'en' ? 'active' : '' }}">🇬🇧 English</a>
+        </div>
         <div class="offcanvas-menu mb-20px">
             <ul>
                 <li><a href="/">Home</a></li>

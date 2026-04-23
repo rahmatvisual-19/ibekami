@@ -528,70 +528,50 @@
                 <div class="insta-row">
                     <div data-aos="fade-up" data-aos-delay="200">
                         <div class="insta-wrapper">
-                            {{-- Thumbnail klik-untuk-main: video tidak dimuat sampai user klik --}}
-                            <div class="video-facade"
-                                 data-src="videos/instagram.mp4"
-                                 onclick="playFacadeVideo(this)"
-                                 style="position:relative;cursor:pointer;background:#000;aspect-ratio:9/16;overflow:hidden;border-radius:8px;">
-                                <img src="images/social/instagram-thumb.webp"
-                                     onerror="this.style.display='none'"
-                                     alt="Instagram @ibekami.id"
-                                     loading="lazy"
-                                     width="405" height="720"
-                                     style="width:100%;height:100%;object-fit:cover;opacity:0.85;">
-                                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-                                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                                        <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.45)"/>
-                                        <polygon points="26,20 50,32 26,44" fill="#fff"/>
-                                    </svg>
-                                </div>
-                                <a href="https://www.instagram.com/ibekami.id" target="_blank"
-                                   style="position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.7);pointer-events:auto;"
-                                   onclick="event.stopPropagation()">@ibekami.id &nbsp;▶ Instagram</a>
-                            </div>
+                            <a href="https://www.instagram.com/ibekami.id" target="_blank" class="instagram">
+                                <video class="w-100" loop muted playsinline preload="none"
+                                       data-src="{{ asset('videos/instagram-v2.mp4') }}">
+                                </video>
+                            </a>
                         </div>
                     </div>
                     <div data-aos="fade-up" data-aos-delay="400">
                         <div class="insta-wrapper">
-                            <div class="video-facade"
-                                 data-src="videos/tiktok.mp4"
-                                 onclick="playFacadeVideo(this)"
-                                 style="position:relative;cursor:pointer;background:#000;aspect-ratio:9/16;overflow:hidden;border-radius:8px;">
-                                <img src="images/social/tiktok-thumb.webp"
-                                     onerror="this.style.display='none'"
-                                     alt="TikTok @ibekami.id"
-                                     loading="lazy"
-                                     width="405" height="720"
-                                     style="width:100%;height:100%;object-fit:cover;opacity:0.85;">
-                                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-                                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                                        <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.45)"/>
-                                        <polygon points="26,20 50,32 26,44" fill="#fff"/>
-                                    </svg>
-                                </div>
-                                <a href="https://www.tiktok.com/@ibekami.id" target="_blank"
-                                   style="position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.7);pointer-events:auto;"
-                                   onclick="event.stopPropagation()">@ibekami.id &nbsp;▶ TikTok</a>
-                            </div>
+                            <a href="https://www.tiktok.com/@ibekami.id" target="_blank" class="tiktok">
+                                <video class="w-100" loop muted playsinline preload="none"
+                                       data-src="{{ asset('videos/tiktok-v2.mp4') }}">
+                                </video>
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <script>
-                function playFacadeVideo(el) {
-                    var src   = el.dataset.src;
-                    var video = document.createElement('video');
-                    video.src         = src;
-                    video.autoplay    = true;
-                    video.loop        = true;
-                    video.muted       = true;
-                    video.playsinline = true;
-                    video.controls    = true;
-                    video.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
-                    el.innerHTML = '';
-                    el.appendChild(video);
-                    video.play();
-                }
+                (function () {
+                    if (!('IntersectionObserver' in window)) {
+                        // Fallback: langsung load semua
+                        document.querySelectorAll('.insta-wrapper video[data-src]').forEach(function (v) {
+                            v.src = v.dataset.src;
+                            v.load();
+                            v.play().catch(function(){});
+                        });
+                        return;
+                    }
+                    var obs = new IntersectionObserver(function (entries, o) {
+                        entries.forEach(function (entry) {
+                            if (!entry.isIntersecting) return;
+                            var v = entry.target;
+                            v.src = v.dataset.src;
+                            v.load();
+                            v.play().catch(function(){});
+                            o.unobserve(v);
+                        });
+                    }, { threshold: 0.25 });
+
+                    document.querySelectorAll('.insta-wrapper video[data-src]').forEach(function (v) {
+                        obs.observe(v);
+                    });
+                })();
                 </script>
             </div>
         </div>
