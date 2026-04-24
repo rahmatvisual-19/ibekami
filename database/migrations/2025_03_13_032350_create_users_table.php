@@ -12,15 +12,12 @@ return new class extends Migration
 
     public function up(): void
     {
-        // Only create the table when it does not already exist (e.g. seeding/dev DBs)
-        if (!Schema::hasTable('users')) {
-            Schema::create('users', function (Blueprint $table) {
-                $table->string('username')->primary();
-                $table->string('name');
-                $table->string('password');
-                $table->timestamps();
-            });
-        }
+        Schema::create('users', function (Blueprint $table) {
+            $table->string('username')->primary();
+            $table->string('name');
+            $table->string('password');
+            $table->timestamps();
+        });
 
         if (Schema::hasColumn('users', 'id')) {
             Schema::table('users', function (Blueprint $table) {

@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'whatsapp/webhook', // Sesuai dengan route di web.php
+        'api/whatsapp/webhook',
+        'whatsapp/webhook', // Untuk jaga-jaga kalau kamu pakai web.php
     ];
 }

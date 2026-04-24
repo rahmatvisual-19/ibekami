@@ -20,12 +20,13 @@ class Product extends Model
 
     protected $fillable = [
         'product_id', 'name', 'product_type', 'category_type', 
-        'price', 'image_url', 'detail', 'description', 'status'
+        'price', 'image_url', 'detail', 'description', 'status', 'activated_at'
     ];
 
     protected $casts = [
-        'image_url' => 'array', 
-        'detail' => 'array',   
+        'image_url'    => 'array', 
+        'detail'       => 'array',
+        'activated_at' => 'datetime',
     ];
 
     protected static function boot()

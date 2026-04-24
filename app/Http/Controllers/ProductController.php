@@ -72,13 +72,14 @@ class ProductController extends Controller
         }
 
         Product::create([
-            'name' => $request->nama_produk,
-            'product_type' => $request->jenis_produk,
+            'name'          => $request->nama_produk,
+            'product_type'  => $request->jenis_produk,
             'category_type' => $request->kategori_produk,
-            'description' => $request->deskripsi_produk,
-            'status' => $request->status,
-            'detail' => $details,
-            'image_url' => $imagePaths
+            'description'   => $request->deskripsi_produk,
+            'status'        => $request->status,
+            'detail'        => $details,
+            'image_url'     => $imagePaths,
+            'activated_at'  => $request->status === 'Aktif' ? now() : null,
         ]);
 
         session()->flash('success', 'Daftar barang berhasil ditambahkan!');
@@ -130,11 +131,21 @@ class ProductController extends Controller
         ]);
 
         $product = Product::findOrFail($product_id);
+        
+        // Track status change untuk activated_at
+        $oldStatus = $product->status;
+        $newStatus = $request->status;
+
         $product->product_type = $request->jenis_produk;
         $product->category_type = $request->kategori_produk;
         $product->name = $request->nama_produk;
         $product->description = $request->deskripsi_produk;
-        $product->status = $request->status;
+        $product->status = $newStatus;
+
+        // Set activated_at jika status berubah dari non-Aktif → Aktif
+        if ($oldStatus !== 'Aktif' && $newStatus === 'Aktif') {
+            $product->activated_at = now();
+        }
 
         $details = [];
 

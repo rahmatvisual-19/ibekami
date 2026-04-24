@@ -25,7 +25,9 @@ class Controller extends BaseController
         $orgPartner  = $partners->where('category', 'Organization');
 
         $product = Product::where('status', 'Aktif')
-            ->select('product_id', 'name', 'image_url', 'product_type', 'status')
+            ->whereNotNull('activated_at')
+            ->orderBy('activated_at', 'desc')
+            ->select('product_id', 'name', 'image_url', 'product_type', 'status', 'activated_at')
             ->get();
 
         $testimonies = Review::all()->map(function ($testimony) {

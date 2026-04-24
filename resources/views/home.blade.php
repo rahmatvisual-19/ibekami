@@ -403,19 +403,11 @@
                     <div class="col-lg-6 col-12 mb-md-30px mb-lm-30px" data-aos="fade-up" data-aos-delay="200">
                         <a href="https://tk.tokopedia.com/ZS9FJjX9u/" class="banner" target="_blank">
                             <div class="banner-container">
-                                <img src="images/banner/tokped-nocapt.jpg"
+                                <img src="images/banner/tokped-nocapt.png"
                                      alt="Tokopedia Banner"
                                      loading="lazy"
                                      width="600" height="300" />
                                 <div class="overlay-text-1">
-                                    <div class="up">
-                                        <h2>PLAQUES &amp; <br> SOUVENIRS</h2>
-                                        <p>ETC.</p>
-                                    </div>
-                                    <div class="down">
-                                        <h4>{!! __('home.shipped_to_you') !!}</h4>
-                                        <h3>{{ __('home.free') }}</h3>
-                                    </div>
                                 </div>
                             </div>
                         </a>
@@ -423,14 +415,11 @@
                     <div class="col-lg-6 col-12" data-aos="fade-up" data-aos-delay="400">
                         <a href="https://shopee.co.id/ikhtiar_berkah" class="banner" target="_blank">
                             <div class="banner-container">
-                                <img src="images/banner/shope-nocapt.jpg"
+                                <img src="images/banner/shope-nocapt.png"
                                      alt="Shopee Banner"
                                      loading="lazy"
                                      width="600" height="300" />
                                 <div class="overlay-text">
-                                    <h2>{!! __('home.free_shipping') !!}</h2>
-                                    <h3>{!! __('home.for_all_products') !!}</h3>
-                                </div>
                             </div>
                         </a>
                     </div>
