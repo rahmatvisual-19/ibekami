@@ -1,15 +1,13 @@
 @extends ('backend.layout.template')
 @section('content')
     @if (session('success'))
-        <script>
-            alert("{{ session('success') }}");
-        </script>
+        <script>alert("{{ session('success') }}");</script>
     @endif
-
     @if (session('delete'))
-        <script>
-            alert("{{ session('delete') }}");
-        </script>
+        <script>alert("{{ session('delete') }}");</script>
+    @endif
+    @if (session('error'))
+        <script>alert("{{ session('error') }}");</script>
     @endif
 
     <section class="pcoded-main-container">
@@ -44,7 +42,11 @@
                                     <div class="card">
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <h4>Banner List</h4>
-                                            <a href="{{ route('banner.add') }}" class="btn btn-primary">Add New Banner</a>
+                                            @if($banner->count() < 1)
+                                                <a href="{{ route('banner.add') }}" class="btn btn-primary">Add New Banner</a>
+                                            @else
+                                                <span class="badge bg-warning text-dark">Max 1 banner reached — edit or delete to replace</span>
+                                            @endif
                                         </div>
                                         <div class="card-body">
                                             <div class="dt-responsive table-responsive">

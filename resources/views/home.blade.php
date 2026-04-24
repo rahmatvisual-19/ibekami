@@ -227,7 +227,13 @@
             carousel.addEventListener('slid.bs.carousel', function (e) {
                 var incoming = getVideo(e.relatedTarget);
                 if (incoming) {
-                    // Lazy-load: set src saat pertama kali slide masuk
+                    incoming.load();
+                    incoming.play().catch(function () {});
+                }
+            });
+        })();
+        </script>
+
         <hr>
 
         <!-- =============================================

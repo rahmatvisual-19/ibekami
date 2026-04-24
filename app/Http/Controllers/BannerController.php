@@ -16,6 +16,12 @@ class BannerController extends Controller
 
     public function create(Request $request)
     {
+        // Hanya boleh ada 1 banner (video tunggal)
+        if (Banner::count() >= 1) {
+            return redirect()->route('banner.index')
+                ->with('error', 'Only 1 banner is allowed. Please edit or delete the existing one first.');
+        }
+
         $request->validate([
             'banner_picture' => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:51200'
         ],[
