@@ -436,7 +436,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-12 mb-md-30px mb-lm-30px" data-aos="fade-up" data-aos-delay="200">
-                        <a href="#" class="banner">
+                        <a href="https://tk.tokopedia.com/ZS9FJjX9u/" class="banner" target="_blank">
                             <div class="banner-container">
                                 <img src="images/banner/tokped-nocapt.jpg"
                                      alt="Tokopedia Banner"
@@ -456,7 +456,7 @@
                         </a>
                     </div>
                     <div class="col-lg-6 col-12" data-aos="fade-up" data-aos-delay="400">
-                        <a href="#" class="banner">
+                        <a href="https://shopee.co.id/ikhtiar_berkah" class="banner" target="_blank">
                             <div class="banner-container">
                                 <img src="images/banner/shope-nocapt.jpg"
                                      alt="Shopee Banner"

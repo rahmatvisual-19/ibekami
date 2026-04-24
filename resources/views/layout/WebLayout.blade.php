@@ -6,6 +6,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Souvenir, Merchandise, Digital Printing Medan')</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DR31JFPHR">
+    </script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-2DR31JFPHR');
+    </script>
     <meta name="robots" content="index, follow" />
     <meta name="description" content="Ibekami.id, a Souvenir and Merchandise center in Medan City. Provides Various Custom Souvenirs, Custom Merchandise, Plaques, Offset Prints and UV Prints Get special prices for all orders. Contact 08112272727">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -157,11 +167,23 @@
                             <div class="single-wedge">
                             <h4>{{ __('layout.social_media') }}</h4>
                                 <ul class="social-links align-items-center">
-                                    <li><a class="ion-social-instagram" href="https://www.instagram.com/ibekami.id" target="_blank"> @ibekami.id</a></li>
-                                    <li><i class="fa-brands fa-tiktok"><a href="https://www.tiktok.com/@ibekami.id" target="_blank"> @ibekami.id</i></a></li>
-                                    
-                                  
-                                </ul>
+    <li>
+        <a class="ion-social-instagram" 
+           href="https://www.instagram.com/ibekami.id" 
+           target="_blank"
+           style="font-size: 28px;">
+           @ibekami.id
+        </a>
+    </li>
+
+    <li>
+        <a href="https://www.tiktok.com/@ibekami.id" 
+           target="_blank"
+           style="font-size: 28px;">
+           <i class="fa-brands fa-tiktok"></i> @ibekami.id
+        </a>
+    </li>
+</ul>
                             </div>
                             <br><br>
                             <div class="single-wedge">
