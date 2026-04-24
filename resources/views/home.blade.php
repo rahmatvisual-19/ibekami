@@ -21,62 +21,6 @@
         <!-- CSS KHUSUS UNTUK HERO CAROUSEL & PRODUCT CARD -->
         <style>
             /* =============================================
-               HERO ACCORDION CAROUSEL
-            ============================================= */
-
-            /* Animasi masuk (Jatuh dari atas dengan pantulan / spring bounce) */
-            @keyframes dropInPanel {
-                0%   { transform: translateY(-100vh); opacity: 0; }
-                70%  { transform: translateY(20px);   opacity: 1; }
-                85%  { transform: translateY(-10px);  opacity: 1; }
-                100% { transform: translateY(0);      opacity: 1; }
-            }
-
-            .hero-accordion-carousel {
-                width: 100%;
-                height: calc(100vh - 90px);
-                display: flex;
-                flex-direction: row;
-                overflow: hidden;
-                background-color: #EFE9DA;
-                box-sizing: border-box;
-            }
-
-            .hero-panel {
-                flex: 1 0 0;
-                position: relative;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                z-index: 1;
-                min-width: 0;
-
-                /* Animasi masuk — opacity mulai 0 */
-                opacity: 0;
-                animation: dropInPanel 0.9s ease-in-out forwards;
-            }
-
-            .hero-panel-img {
-                position: absolute;
-                inset: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                z-index: 1;
-            }
-
-            /* Tampilan Mobile — Grid 2×2 */
-            @media (max-width: 768px) {
-                .hero-accordion-carousel {
-                    flex-wrap: wrap;
-                }
-                .hero-panel {
-                    flex: 0 0 50%;
-                    height: 50%;
-                }
-            }
-
-            /* =============================================
                PRODUCT CARD — OVERLAY & MOBILE BUTTON
                FIX: konsistensi tampilan desktop vs mobile
             ============================================= */
@@ -191,84 +135,99 @@
         @include('layout.partials.navbar')
 
         <!-- ========================================== -->
-        <!-- HERO SECTION CAROUSEL -->
+        <!-- HERO BOOTSTRAP CAROUSEL                    -->
+        <!-- Hanya 1 video/gambar aktif sekaligus       -->
         <!-- ========================================== -->
-        <div class="hero-accordion-carousel">
-            @php
-                $pastelColors = ['#e6e6e6', '#ff9c9c', '#fce0a2', '#d4fca4', '#b5d8ff'];
-            @endphp
+        <style>
+            #heroBannerCarousel {
+                width: 100%;
+                height: calc(100vh - 90px);
+                background: #EFE9DA;
+            }
+            #heroBannerCarousel .carousel-inner,
+            #heroBannerCarousel .carousel-item {
+                height: 100%;
+            }
+            #heroBannerCarousel .carousel-item img,
+            #heroBannerCarousel .carousel-item video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            /* Pause video saat slide tidak aktif */
+            #heroBannerCarousel .carousel-item video { display: block; }
 
-            @foreach ($banners as $index => $banner)
-                @php
-                    $bgColor  = $pastelColors[$index % count($pastelColors)];
-                    $ext      = strtolower(pathinfo($banner->image_url, PATHINFO_EXTENSION));
-                    $isVideo  = in_array($ext, ['mp4', 'webm', 'ogg']);
-                @endphp
+            @media (max-width: 768px) {
+                #heroBannerCarousel { height: 50vh; }
+            }
+        </style>
 
-                <div class="hero-panel"
-                     style="background-color: {{ $bgColor }}; animation-delay: {{ $index * 0.15 }}s;">
+        @php
+            $pastelColors = ['#e6e6e6', '#ff9c9c', '#fce0a2', '#d4fca4', '#b5d8ff'];
+        @endphp
 
-                    @if(!empty($banner->image_url))
-                        @if($isVideo)
-                            @if($index === 0)
-                                {{-- Video pertama: autoplay langsung --}}
-                                <video class="hero-panel-img"
-                                       autoplay loop muted playsinline preload="metadata"
-                                       src="{{ asset('storage/banner_picture/' . $banner->image_url) }}">
+        <div id="heroBannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                @foreach ($banners as $index => $banner)
+                    @php
+                        $ext     = strtolower(pathinfo($banner->image_url, PATHINFO_EXTENSION));
+                        $isVideo = in_array($ext, ['mp4', 'webm', 'ogg']);
+                        $bgColor = $pastelColors[$index % count($pastelColors)];
+                        $isFirst = $index === 0;
+                    @endphp
+
+                    <div class="carousel-item {{ $isFirst ? 'active' : '' }}"
+                         style="background-color: {{ $bgColor }};">
+
+                        @if(!empty($banner->image_url))
+                            @if($isVideo)
+                                @php
+                                    $webmFile = pathinfo($banner->image_url, PATHINFO_FILENAME) . '.webm';
+                                    $webmPath = storage_path('app/public/banner_picture/' . $webmFile);
+                                    $hasWebm  = file_exists($webmPath);
+                                @endphp
+                                <video
+                                    {{ $isFirst ? 'autoplay' : '' }}
+                                    loop muted playsinline
+                                    preload="{{ $isFirst ? 'metadata' : 'none' }}">
+                                    @if($hasWebm)
+                                        <source src="{{ asset('storage/banner_picture/' . $webmFile) }}" type="video/webm">
+                                    @endif
                                     <source src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
                                             type="video/{{ $ext === 'mp4' ? 'mp4' : $ext }}">
                                 </video>
                             @else
-                                {{-- Video lainnya: lazy-load via IntersectionObserver --}}
-                                <video class="hero-panel-img"
-                                       loop muted playsinline preload="none"
-                                       data-src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
-                                       data-type="video/{{ $ext === 'mp4' ? 'mp4' : $ext }}">
-                                </video>
-                            @endif
-                        @else
-                            @if($index === 0)
-                                {{-- Gambar pertama (LCP): eager + high priority --}}
-                                <img class="hero-panel-img"
-                                     src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
-                                     alt="{{ $banner->title }}"
-                                     fetchpriority="high">
-                            @else
-                                <img class="hero-panel-img"
-                                     src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
-                                     alt="{{ $banner->title }}"
-                                     loading="lazy">
+                                <img
+                                    src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
+                                    alt="{{ $banner->title }}"
+                                    {{ $isFirst ? 'fetchpriority="high"' : 'loading="lazy"' }}>
                             @endif
                         @endif
-                    @endif
-                </div>
-            @endforeach
+                    </div>
+                @endforeach
+            </div>
+
         </div>
-        <!-- ========================================== -->
 
         <script>
-        // Lazy-load video hero panels yang bukan panel pertama
+        // Pause video saat slide keluar, play saat slide masuk
         (function () {
-            if (!('IntersectionObserver' in window)) return;
-            document.querySelectorAll('.hero-panel video[data-src]').forEach(function (video) {
-                var obs = new IntersectionObserver(function (entries, o) {
-                    entries.forEach(function (entry) {
-                        if (!entry.isIntersecting) return;
-                        var v      = entry.target;
-                        var source = document.createElement('source');
-                        source.src  = v.dataset.src;
-                        source.type = v.dataset.type || 'video/mp4';
-                        v.appendChild(source);
-                        v.load();
-                        v.play().catch(function () {});
-                        o.unobserve(v);
-                    });
-                }, { threshold: 0.1 });
-                obs.observe(video);
-            });
-        })();
-        </script>
+            var carousel = document.getElementById('heroBannerCarousel');
+            if (!carousel) return;
 
+            function getVideo(item) {
+                return item ? item.querySelector('video') : null;
+            }
+
+            carousel.addEventListener('slide.bs.carousel', function (e) {
+                var leaving = getVideo(e.relatedTarget.parentElement.querySelector('.carousel-item.active'));
+                if (leaving) { leaving.pause(); }
+            });
+
+            carousel.addEventListener('slid.bs.carousel', function (e) {
+                var incoming = getVideo(e.relatedTarget);
+                if (incoming) {
+                    // Lazy-load: set src saat pertama kali slide masuk
         <hr>
 
         <!-- =============================================
