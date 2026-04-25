@@ -66,6 +66,9 @@
         img{max-width:100%;height:auto;display:block}
         /* Navbar placeholder agar tidak layout shift */
         .navbar-area{position:relative;z-index:999;background:#fff}
+        /* Offset konten karena navbar fixed */
+        .breadcrumb-area { margin-top: 110px; }
+        @media(max-width:991px){ .breadcrumb-area { margin-top: 110px; } }
         /* Hero accordion */
         .hero-accordion-carousel{width:100%;height:calc(100vh - 90px);display:flex;flex-direction:row;overflow:hidden;background-color:#EFE9DA;box-sizing:border-box}
         .hero-panel{flex:1 0 0;position:relative;overflow:hidden;display:flex;flex-direction:column;z-index:1;min-width:0;opacity:0}

@@ -27,8 +27,13 @@ class Controller extends BaseController
         $product = Product::where('status', 'Aktif')
             ->whereNotNull('activated_at')
             ->orderBy('activated_at', 'desc')
-            ->select('product_id', 'name', 'image_url', 'product_type', 'status', 'activated_at')
+            ->select('product_id', 'name', 'image_url', 'product_type', 'category_type', 'status', 'activated_at')
+            ->take(24)
             ->get();
+
+        $homeCategories = Category::whereHas('products', function ($q) {
+            $q->where('status', 'Aktif')->whereNotNull('activated_at');
+        })->orderBy('name')->get();
 
         $testimonies = Review::all()->map(function ($testimony) {
             $testimony->initial       = strtoupper(substr($testimony->name, 0, 1));
@@ -36,7 +41,7 @@ class Controller extends BaseController
             return $testimony;
         });
 
-        return view('home', compact('product', 'types', 'testimonies', 'banners', 'bumnPartner', 'orgPartner'));
+        return view('home', compact('product', 'types', 'testimonies', 'banners', 'bumnPartner', 'orgPartner', 'homeCategories'));
     }
 
     public function product($product_id)

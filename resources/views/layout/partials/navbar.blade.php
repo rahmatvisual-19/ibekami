@@ -32,24 +32,17 @@
     background-color: var(--ibk-v3-primary);
     width: 100%;
     z-index: 9999;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
     transition: var(--ibk-v3-transition);
 }
 
 /* Sticky State */
 .ibk-v3-navbar.ibk-v3-sticky {
-    position: fixed;
-    top: 0;
-    left: 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     background-color: rgba(178, 85, 51, 0.98);
     backdrop-filter: blur(8px);
-    animation: ibk-v3-slide-down 0.4s ease-out;
-}
-
-@keyframes ibk-v3-slide-down {
-    from { transform: translateY(-100%); }
-    to { transform: translateY(0); }
 }
 
 /* ── Layout Wrapper (3-Column Grid) ─────────────────────────── */
@@ -209,26 +202,40 @@
 /* ── Mobile View Style ───────────────────────────────────────── */
 @media (max-width: 991px) {
     .ibk-v3-nav-container {
+        grid-template-columns: 1fr auto;
         height: var(--ibk-v3-h-mobile);
         padding: 0 16px;
+        gap: 0;
     }
-    
-    .ibk-v3-col-center { display: none; } /* Sembunyikan menu desktop */
-    
+
+    .ibk-v3-col-center { display: none; }
+
     .ibk-v3-col-left { flex: none; }
-    .ibk-v3-logo-box img { height: 40px; }
-    .ibk-v3-tagline { font-size: 8px; margin-top: 2px; }
+    .ibk-v3-logo-box img { height: 38px; }
+    .ibk-v3-tagline { display: none; }
 
     .ibk-v3-col-right {
-        flex: 1;
+        display: flex;
+        align-items: center;
         justify-content: flex-end;
-        gap: 12px;
+        gap: 10px;
+    }
+
+    /* Sembunyikan search di mobile — ada di search bar bawah */
+    .ibk-v3-search-static {
+        display: none !important;
+    }
+
+    /* Language switcher di mobile: tampil kecil di samping hamburger */
+    .ibk-v3-lang-switcher {
+        font-size: 10px;
+        gap: 4px;
     }
 
     /* Mobile Search Area */
     .ibk-v3-mobile-search-bar {
         background: var(--ibk-v3-primary-dark);
-        padding: 12px 16px;
+        padding: 10px 16px 12px;
     }
     .ibk-v3-mobile-form {
         display: flex;
@@ -242,12 +249,15 @@
         padding: 10px 14px;
         font-size: 14px;
         outline: none;
+        min-width: 0;
     }
     .ibk-v3-mobile-form button {
         background: none;
         border: none;
         padding: 0 16px;
         color: var(--ibk-v3-primary);
+        cursor: pointer;
+        flex-shrink: 0;
     }
 }
 
