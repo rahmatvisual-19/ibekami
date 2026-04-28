@@ -391,52 +391,61 @@
                         @if(!empty($banner->image_url))
                             @if($isVideo)
                                 @php
-                                    $webmFile = pathinfo($banner->image_url, PATHINFO_FILENAME) . '.webm';
-                                    $webmPath = storage_path('app/public/banner_picture/' . $webmFile);
-                                    $hasWebm  = file_exists($webmPath);
-                                    
-                                    // Cari poster image (jpg/png/webp dengan nama sama di storage)
-                                    $posterFile = pathinfo($banner->image_url, PATHINFO_FILENAME);
-                                    $posterJpg  = storage_path('app/public/banner_picture/' . $posterFile . '.jpg');
-                                    $posterPng  = storage_path('app/public/banner_picture/' . $posterFile . '.png');
-                                    $posterWebp = storage_path('app/public/banner_picture/' . $posterFile . '.webp');
-                                    
+                                    // Level 1: Cari poster dan video dengan nama fixed di storage/banner_picture/
                                     $posterUrl = null;
-                                    if (file_exists($posterWebp)) {
-                                        $posterUrl = asset('storage/banner_picture/' . $posterFile . '.webp');
-                                    } elseif (file_exists($posterJpg)) {
-                                        $posterUrl = asset('storage/banner_picture/' . $posterFile . '.jpg');
-                                    } elseif (file_exists($posterPng)) {
-                                        $posterUrl = asset('storage/banner_picture/' . $posterFile . '.png');
+                                    $videoUrl = null;
+                                    
+                                    // Cek poster dengan nama fixed: poster.webp atau heroes.webp
+                                    $fixedPosterWebp = storage_path('app/public/banner_picture/poster.webp');
+                                    $fixedHeroesWebp = storage_path('app/public/banner_picture/heroes.webp');
+                                    
+                                    if (file_exists($fixedPosterWebp)) {
+                                        $posterUrl = asset('storage/banner_picture/poster.webp');
+                                    } elseif (file_exists($fixedHeroesWebp)) {
+                                        $posterUrl = asset('storage/banner_picture/heroes.webp');
+                                    }
+                                    
+                                    // Cek video dengan nama fixed: vidio.webm
+                                    $fixedVideoWebm = storage_path('app/public/banner_picture/vidio.webm');
+                                    if (file_exists($fixedVideoWebm)) {
+                                        $videoUrl = asset('storage/banner_picture/vidio.webm');
                                     } else {
-                                        // Fallback ke poster default di public/images/hero/heroes.webp
-                                        $defaultPoster = public_path('images/hero/heroes.webp');
-                                        if (file_exists($defaultPoster)) {
-                                            $posterUrl = asset('images/hero/heroes.webp');
+                                        // Fallback ke video dari database
+                                        $videoUrl = asset('storage/banner_picture/' . $banner->image_url);
+                                    }
+                                    
+                                    // Level 2: Fallback ke public/images/hero/ jika poster tidak ditemukan
+                                    if (!$posterUrl) {
+                                        $heroPosters = ['heroes.webp', 'poster.webp', 'hero-poster.webp', 'hero.jpg'];
+                                        foreach ($heroPosters as $heroFile) {
+                                            $heroPath = public_path('images/hero/' . $heroFile);
+                                            if (file_exists($heroPath)) {
+                                                $posterUrl = asset('images/hero/' . $heroFile);
+                                                break;
+                                            }
                                         }
+                                    }
+                                    
+                                    // Level 3: SVG placeholder jika masih tidak ada
+                                    if (!$posterUrl) {
+                                        $posterUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1440" height="600"%3E%3Crect width="1440" height="600" fill="%23EFE9DA"/%3E%3C/svg%3E';
                                     }
                                 @endphp
                                 
                                 {{-- Poster statis tampil duluan --}}
-                                @if($posterUrl)
-                                    <img class="video-poster"
-                                         src="{{ $posterUrl }}"
-                                         alt="{{ $banner->title ?? 'IBEKAMI Hero Banner' }}"
-                                         width="1440"
-                                         height="600"
-                                         {{ $isFirst ? 'fetchpriority="high"' : 'loading="lazy"' }}>
-                                @endif
+                                <img class="video-poster"
+                                     src="{{ $posterUrl }}"
+                                     alt="{{ $banner->title ?? 'IBEKAMI Hero Banner' }}"
+                                     width="1440"
+                                     height="600"
+                                     {{ $isFirst ? 'fetchpriority="high"' : 'loading="lazy"' }}>
                                 
                                 {{-- Video lazy load --}}
                                 <video class="lazy-video"
                                        data-slide-index="{{ $index }}"
                                        loop muted playsinline
                                        preload="none">
-                                    @if($hasWebm)
-                                        <source data-src="{{ asset('storage/banner_picture/' . $webmFile) }}" type="video/webm">
-                                    @endif
-                                    <source data-src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
-                                            type="video/{{ $ext === 'mp4' ? 'mp4' : $ext }}">
+                                    <source data-src="{{ $videoUrl }}" type="video/webm">
                                 </video>
                             @else
                                 <img
