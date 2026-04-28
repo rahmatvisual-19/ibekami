@@ -51,6 +51,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
     <!-- Preload LCP image (banner pertama) — diisi dinamis via blade jika tersedia -->
     @yield('preload_lcp')
@@ -78,6 +79,9 @@
         .floating-whatsapp{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;justify-content:center}
         /* Prevent CLS pada section */
         section{display:block}
+        /* Font display swap untuk menghindari FOIT */
+        @font-face{font-family:'Open Sans';font-display:swap;src:local('Open Sans')}
+        @font-face{font-family:'Montserrat';font-display:swap;src:local('Montserrat')}
     </style>
 
     <!-- CSS Inti — blocking (wajib ada sebelum render) -->
@@ -107,8 +111,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
-    <!-- Google Fonts — async load dengan display=swap -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- Google Fonts — async load dengan display=swap untuk menghindari FOIT -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"></noscript>
 
     <!-- GTM + GA: Load on Interaction (scroll/click/touch) — TBT Fix -->
