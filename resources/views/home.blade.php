@@ -321,6 +321,48 @@
                     display: flex;
                 }
             }
+
+            /* =============================================
+               LAZY LOAD - Gambar dimuat saat scroll
+            ============================================= */
+            img[loading="lazy"] {
+                background: transparent;
+            }
+
+            /* =============================================
+               HERO VIDEO LAZY LOAD
+            ============================================= */
+            .carousel-item {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .carousel-item .video-poster {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: opacity 0.5s ease;
+            }
+
+            .carousel-item .lazy-video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0;
+                transition: opacity 0.8s ease;
+            }
+
+            .carousel-item .lazy-video.loaded {
+                opacity: 1;
+            }
+
+            .carousel-item .video-poster.hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
         </style>
         <!-- AKHIR CSS KHUSUS -->
 
@@ -352,15 +394,48 @@
                                     $webmFile = pathinfo($banner->image_url, PATHINFO_FILENAME) . '.webm';
                                     $webmPath = storage_path('app/public/banner_picture/' . $webmFile);
                                     $hasWebm  = file_exists($webmPath);
+                                    
+                                    // Cari poster image (jpg/png/webp dengan nama sama di storage)
+                                    $posterFile = pathinfo($banner->image_url, PATHINFO_FILENAME);
+                                    $posterJpg  = storage_path('app/public/banner_picture/' . $posterFile . '.jpg');
+                                    $posterPng  = storage_path('app/public/banner_picture/' . $posterFile . '.png');
+                                    $posterWebp = storage_path('app/public/banner_picture/' . $posterFile . '.webp');
+                                    
+                                    $posterUrl = null;
+                                    if (file_exists($posterWebp)) {
+                                        $posterUrl = asset('storage/banner_picture/' . $posterFile . '.webp');
+                                    } elseif (file_exists($posterJpg)) {
+                                        $posterUrl = asset('storage/banner_picture/' . $posterFile . '.jpg');
+                                    } elseif (file_exists($posterPng)) {
+                                        $posterUrl = asset('storage/banner_picture/' . $posterFile . '.png');
+                                    } else {
+                                        // Fallback ke poster default di public/images/hero/heroes.webp
+                                        $defaultPoster = public_path('images/hero/heroes.webp');
+                                        if (file_exists($defaultPoster)) {
+                                            $posterUrl = asset('images/hero/heroes.webp');
+                                        }
+                                    }
                                 @endphp
-                                <video
-                                    {{ $isFirst ? 'autoplay' : '' }}
-                                    loop muted playsinline
-                                    preload="{{ $isFirst ? 'metadata' : 'none' }}">
+                                
+                                {{-- Poster statis tampil duluan --}}
+                                @if($posterUrl)
+                                    <img class="video-poster"
+                                         src="{{ $posterUrl }}"
+                                         alt="{{ $banner->title ?? 'IBEKAMI Hero Banner' }}"
+                                         width="1440"
+                                         height="600"
+                                         {{ $isFirst ? 'fetchpriority="high"' : 'loading="lazy"' }}>
+                                @endif
+                                
+                                {{-- Video lazy load --}}
+                                <video class="lazy-video"
+                                       data-slide-index="{{ $index }}"
+                                       loop muted playsinline
+                                       preload="none">
                                     @if($hasWebm)
-                                        <source src="{{ asset('storage/banner_picture/' . $webmFile) }}" type="video/webm">
+                                        <source data-src="{{ asset('storage/banner_picture/' . $webmFile) }}" type="video/webm">
                                     @endif
-                                    <source src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
+                                    <source data-src="{{ asset('storage/banner_picture/' . $banner->image_url) }}"
                                             type="video/{{ $ext === 'mp4' ? 'mp4' : $ext }}">
                                 </video>
                             @else
@@ -376,27 +451,92 @@
         </div>
 
         <script>
-        // Pause video saat slide keluar, play saat slide masuk
+        // Hero Video Lazy Load + Carousel Control
         (function () {
             var carousel = document.getElementById('heroBannerCarousel');
             if (!carousel) return;
 
-            function getVideo(item) {
-                return item ? item.querySelector('video') : null;
+            var loadedVideos = {}; // Track video yang sudah di-load
+
+            // Load video saat slide aktif atau mendekati viewport
+            function loadVideo(video) {
+                if (!video || loadedVideos[video.dataset.slideIndex]) return;
+
+                var sources = video.querySelectorAll('source[data-src]');
+                if (sources.length === 0) return;
+
+                sources.forEach(function (source) {
+                    source.src = source.getAttribute('data-src');
+                    source.removeAttribute('data-src');
+                });
+
+                video.load();
+                loadedVideos[video.dataset.slideIndex] = true;
+
+                // Setelah video siap, fade in dan sembunyikan poster
+                video.addEventListener('canplay', function () {
+                    var poster = video.previousElementSibling;
+                    if (poster && poster.classList.contains('video-poster')) {
+                        video.classList.add('loaded');
+                        video.play().catch(function () {});
+                        setTimeout(function () {
+                            poster.classList.add('hidden');
+                        }, 800);
+                    }
+                }, { once: true });
             }
 
+            // Pause video saat slide keluar, play saat slide masuk
             carousel.addEventListener('slide.bs.carousel', function (e) {
-                var leaving = getVideo(e.relatedTarget.parentElement.querySelector('.carousel-item.active'));
-                if (leaving) { leaving.pause(); }
+                var leavingSlide = carousel.querySelector('.carousel-item.active');
+                var leavingVideo = leavingSlide ? leavingSlide.querySelector('.lazy-video') : null;
+                if (leavingVideo && leavingVideo.src) {
+                    leavingVideo.pause();
+                }
             });
 
             carousel.addEventListener('slid.bs.carousel', function (e) {
-                var incoming = getVideo(e.relatedTarget);
-                if (incoming) {
-                    incoming.load();
-                    incoming.play().catch(function () {});
+                var activeSlide = e.relatedTarget;
+                var activeVideo = activeSlide ? activeSlide.querySelector('.lazy-video') : null;
+                
+                if (activeVideo) {
+                    loadVideo(activeVideo);
                 }
             });
+
+            // Load video pertama saat carousel masuk viewport
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        var firstSlide = carousel.querySelector('.carousel-item.active');
+                        var firstVideo = firstSlide ? firstSlide.querySelector('.lazy-video') : null;
+                        if (firstVideo) {
+                            loadVideo(firstVideo);
+                        }
+                        observer.unobserve(carousel);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(carousel);
+
+            // Pause/play video berdasarkan visibility carousel
+            var playPauseObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    var activeSlide = carousel.querySelector('.carousel-item.active');
+                    var activeVideo = activeSlide ? activeSlide.querySelector('.lazy-video') : null;
+                    
+                    if (activeVideo && activeVideo.src) {
+                        if (entry.isIntersecting) {
+                            activeVideo.play().catch(function () {});
+                        } else {
+                            activeVideo.pause();
+                        }
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            playPauseObserver.observe(carousel);
         })();
         </script>
 

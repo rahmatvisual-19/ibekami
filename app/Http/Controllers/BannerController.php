@@ -23,11 +23,12 @@ class BannerController extends Controller
         }
 
         $request->validate([
-            'banner_picture' => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:51200'
+            'banner_picture' => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:51200|dimensions:max_width=2880,max_height=1200'
         ],[
             'banner_picture.required' => 'Media cannot be empty',
             'banner_picture.mimes'    => 'File formats must be jpg, png, jpeg, webp, mp4, webm, or ogg',
-            'banner_picture.max'      => 'Maximum file size is 50MB'
+            'banner_picture.max'      => 'Maximum file size is 50MB',
+            'banner_picture.dimensions' => 'Resolusi gambar maksimal 2880x1200 px'
         ]);
 
         $banner              = new Banner;
@@ -67,10 +68,11 @@ class BannerController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'banner_picture' => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:51200'
+            'banner_picture' => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:51200|dimensions:max_width=2880,max_height=1200'
         ],[
             'banner_picture.mimes' => 'File formats must be jpg, png, jpeg, webp, mp4, webm, or ogg',
-            'banner_picture.max'   => 'Maximum file size is 50MB'
+            'banner_picture.max'   => 'Maximum file size is 50MB',
+            'banner_picture.dimensions' => 'Resolusi gambar maksimal 2880x1200 px'
         ]);
 
         $banner = Banner::findOrFail($id);
@@ -95,7 +97,7 @@ class BannerController extends Controller
 
     /**
      * Store uploaded media.
-     * - Images: saved as-is (already WebP from client-side conversion).
+     * - Images: resized to 1440x600 max and saved as WebP.
      * - Videos: saved as MP4 first, then converted to WebM via ffmpeg.
      *           If conversion succeeds, MP4 is deleted and WebM filename is returned.
      *           If conversion fails, MP4 is kept as fallback.
@@ -106,9 +108,12 @@ class BannerController extends Controller
         $isVideo  = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
 
         if (!$isVideo) {
-            // Image — store directly
-            $fileName = uniqid() . '.' . $ext;
-            $file->storeAs('banner_picture', $fileName, 'public');
+            // Image — resize & save as WebP
+            $fileName = uniqid() . '.webp';
+            $savePath = storage_path('app/public/banner_picture/' . $fileName);
+            
+            $this->resizeAndSaveWebp($file->getRealPath(), $savePath, 1440, 600, 85);
+            
             return $fileName;
         }
 
@@ -176,5 +181,72 @@ class BannerController extends Controller
                 @unlink($path);
             }
         }
+    }
+
+    /**
+     * Resize gambar dan save sebagai WebP dengan kualitas optimal
+     * 
+     * @param string $sourcePath Path file upload
+     * @param string $savePath Path tujuan save
+     * @param int $maxWidth Lebar maksimal (default 1440)
+     * @param int $maxHeight Tinggi maksimal (default 600)
+     * @param int $quality Kualitas WebP 0-100 (default 85)
+     */
+    private function resizeAndSaveWebp($sourcePath, $savePath, $maxWidth = 1440, $maxHeight = 600, $quality = 85)
+    {
+        // Deteksi tipe gambar
+        $imageInfo = getimagesize($sourcePath);
+        $mimeType = $imageInfo['mime'];
+
+        // Load gambar berdasarkan tipe
+        switch ($mimeType) {
+            case 'image/jpeg':
+                $image = imagecreatefromjpeg($sourcePath);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($sourcePath);
+                break;
+            case 'image/webp':
+                $image = imagecreatefromwebp($sourcePath);
+                break;
+            default:
+                throw new \Exception('Format gambar tidak didukung');
+        }
+
+        // Dapatkan dimensi asli
+        $originalWidth = imagesx($image);
+        $originalHeight = imagesy($image);
+
+        // Hitung dimensi baru (maintain aspect ratio)
+        $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight);
+        
+        // Jangan perbesar gambar kecil
+        if ($ratio > 1) {
+            $ratio = 1;
+        }
+
+        $newWidth = (int)($originalWidth * $ratio);
+        $newHeight = (int)($originalHeight * $ratio);
+
+        // Buat canvas baru
+        $resized = imagecreatetruecolor($newWidth, $newHeight);
+
+        // Preserve transparency untuk PNG
+        if ($mimeType === 'image/png') {
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+            imagefill($resized, 0, 0, $transparent);
+        }
+
+        // Resize
+        imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+        // Save as WebP
+        imagewebp($resized, $savePath, $quality);
+
+        // Cleanup
+        imagedestroy($image);
+        imagedestroy($resized);
     }
 }

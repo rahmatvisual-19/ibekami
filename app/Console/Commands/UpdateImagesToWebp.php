@@ -5,136 +5,112 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Product;
 use App\Models\Type;
-use App\Models\Machine;
 use App\Models\Partnership;
 use App\Models\Banner;
 
-/**
- * Updates all database image_url fields from .jpg/.jpeg/.png to .webp
- * after the Node.js convert-to-webp.js script has run.
- *
- * Usage:
- *   php artisan images:update-db-to-webp [--dry-run]
- */
 class UpdateImagesToWebp extends Command
 {
-    protected $signature   = 'images:update-db-to-webp {--dry-run : Show changes without saving}';
-    protected $description = 'Update all image_url database fields to use .webp extension';
+    protected $signature = 'db:update-images-webp {--dry-run : Preview changes without updating database}';
+    
+    protected $description = 'Update database records untuk pakai file WebP yang sudah dikonversi';
 
-    private int $updated = 0;
-    private int $skipped = 0;
-
-    public function handle(): int
+    public function handle()
     {
-        $dryRun = $this->option('dry-run');
-
-        if ($dryRun) {
-            $this->warn('[DRY RUN] No changes will be saved.');
+        $isDryRun = $this->option('dry-run');
+        
+        if ($isDryRun) {
+            $this->warn('🔍 DRY RUN MODE - Tidak ada perubahan yang disimpan ke database');
+        } else {
+            $this->info('🚀 Memulai update database...');
         }
-
-        $this->info('Updating image records to .webp...');
+        
         $this->newLine();
 
-        $this->updateSingleImageModels($dryRun);
-        $this->updateProductImages($dryRun);
+        $totalUpdated = 0;
 
-        $this->newLine();
-        $this->info("✅ Done — Updated: {$this->updated}, Skipped (already webp): {$this->skipped}");
-
-        if ($dryRun && $this->updated > 0) {
-            $this->warn('Run without --dry-run to apply changes.');
+        // Update Products
+        $this->line('📦 Memproses Products...');
+        $products = Product::all();
+        foreach ($products as $product) {
+            $updated = false;
+            $imageUrls = $product->image_url;
+            
+            if (is_array($imageUrls)) {
+                $newUrls = array_map(function($url) {
+                    return preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $url);
+                }, $imageUrls);
+                
+                if ($newUrls !== $imageUrls) {
+                    if (!$isDryRun) {
+                        $product->image_url = $newUrls;
+                        $product->save();
+                    }
+                    $this->info("   ✓ Product: {$product->name}");
+                    $updated = true;
+                    $totalUpdated++;
+                }
+            }
         }
+
+        // Update Types
+        $this->newLine();
+        $this->line('🏷️  Memproses Types...');
+        $types = Type::all();
+        foreach ($types as $type) {
+            if ($type->image_url && preg_match('/\.(jpg|jpeg|png)$/i', $type->image_url)) {
+                $newUrl = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $type->image_url);
+                if (!$isDryRun) {
+                    $type->image_url = $newUrl;
+                    $type->save();
+                }
+                $this->info("   ✓ Type: {$type->name}");
+                $totalUpdated++;
+            }
+        }
+
+        // Update Partnerships
+        $this->newLine();
+        $this->line('🤝 Memproses Partnerships...');
+        $partnerships = Partnership::all();
+        foreach ($partnerships as $partner) {
+            if ($partner->image_url && preg_match('/\.(jpg|jpeg|png)$/i', $partner->image_url)) {
+                $newUrl = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $partner->image_url);
+                if (!$isDryRun) {
+                    $partner->image_url = $newUrl;
+                    $partner->save();
+                }
+                $this->info("   ✓ Partner: {$partner->name}");
+                $totalUpdated++;
+            }
+        }
+
+        // Update Banners
+        $this->newLine();
+        $this->line('🎨 Memproses Banners...');
+        $banners = Banner::all();
+        foreach ($banners as $banner) {
+            if ($banner->image_url && preg_match('/\.(jpg|jpeg|png)$/i', $banner->image_url)) {
+                $newUrl = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $banner->image_url);
+                if (!$isDryRun) {
+                    $banner->image_url = $newUrl;
+                    $banner->save();
+                }
+                $this->info("   ✓ Banner: {$banner->title}");
+                $totalUpdated++;
+            }
+        }
+
+        // Summary
+        $this->newLine();
+        $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        if ($isDryRun) {
+            $this->warn("📊 PREVIEW: {$totalUpdated} record akan diupdate");
+            $this->line("Jalankan tanpa --dry-run untuk apply perubahan.");
+        } else {
+            $this->info("✅ Selesai! {$totalUpdated} record berhasil diupdate");
+        }
+        $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
         return Command::SUCCESS;
-    }
-
-    // ─── Single-image models ──────────────────────────────────────────────────
-
-    private function updateSingleImageModels(bool $dryRun): void
-    {
-        $models = [
-            ['model' => Type::class,        'label' => 'Type (jenis)',   'folder' => 'gambar_jenis'],
-            ['model' => Machine::class,     'label' => 'Machine',        'folder' => 'machine_picture'],
-            ['model' => Partnership::class, 'label' => 'Partnership',    'folder' => 'gambar_partner'],
-            ['model' => Banner::class,      'label' => 'Banner',         'folder' => 'banner_picture'],
-        ];
-
-        foreach ($models as $cfg) {
-            $records = $cfg['model']::whereNotNull('image_url')->get();
-            $this->line("  [{$cfg['label']}] {$records->count()} record(s)");
-
-            foreach ($records as $record) {
-                $original = $record->image_url;
-                $webp     = $this->toWebpName($original);
-
-                if ($original === $webp) {
-                    $this->skipped++;
-                    continue;
-                }
-
-                // Only update if the .webp file actually exists on disk
-                $diskPath = storage_path("app/public/{$cfg['folder']}/{$webp}");
-                if (!file_exists($diskPath)) {
-                    $this->warn("    ⚠  WebP file not found on disk, skipping: {$webp}");
-                    continue;
-                }
-
-                $this->line("    {$original} → {$webp}");
-                $this->updated++;
-
-                if (!$dryRun) {
-                    $record->image_url = $webp;
-                    $record->save();
-                }
-            }
-        }
-    }
-
-    // ─── Product (JSON array of images) ──────────────────────────────────────
-
-    private function updateProductImages(bool $dryRun): void
-    {
-        $products = Product::whereNotNull('image_url')->get();
-        $this->line("  [Product] {$products->count()} record(s)");
-
-        foreach ($products as $product) {
-            $images  = $product->image_url; // cast to array via model
-            $changed = false;
-            $updated = [];
-
-            foreach ($images as $img) {
-                $webp = $this->toWebpName($img);
-
-                if ($img === $webp) {
-                    $updated[] = $img;
-                    $this->skipped++;
-                    continue;
-                }
-
-                $diskPath = storage_path("app/public/gambar_produk/{$webp}");
-                if (!file_exists($diskPath)) {
-                    $this->warn("    ⚠  WebP not found, keeping original: {$img}");
-                    $updated[] = $img;
-                    continue;
-                }
-
-                $this->line("    [{$product->product_id}] {$img} → {$webp}");
-                $updated[] = $webp;
-                $changed   = true;
-                $this->updated++;
-            }
-
-            if ($changed && !$dryRun) {
-                $product->image_url = $updated;
-                $product->save();
-            }
-        }
-    }
-
-    // ─── Helper ───────────────────────────────────────────────────────────────
-
-    private function toWebpName(string $filename): string
-    {
-        return preg_replace('/\.(jpe?g|png)$/i', '.webp', $filename);
     }
 }

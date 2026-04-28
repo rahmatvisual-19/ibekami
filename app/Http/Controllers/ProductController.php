@@ -37,7 +37,7 @@ class ProductController extends Controller
                 'kategori_produk' => 'required|exists:categories,id',
                 'deskripsi_produk' => 'required|string',
                 'gambar_produk' => 'required|array',
-                'gambar_produk.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120'
+                'gambar_produk.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048|dimensions:max_width=2400,max_height=2400'
             ],
             [
                 'nama_produk.required' => 'Nama Produk Tidak Boleh Kosong !',
@@ -47,7 +47,8 @@ class ProductController extends Controller
                 'gambar_produk.required' => 'Gambar Produk Tidak Boleh Kosong !',
                 'gambar_produk.*.image' => 'Semua file harus berupa gambar !',
                 'gambar_produk.*.mimes' => 'Format gambar harus: png, jpg, jpeg, webp !',
-                'gambar_produk.*.max' => 'Ukuran maksimal 5Mb !'
+                'gambar_produk.*.max' => 'Ukuran maksimal 2MB per gambar !',
+                'gambar_produk.*.dimensions' => 'Resolusi maksimal 2400x2400 px !'
             ],
         );
 
@@ -64,10 +65,12 @@ class ProductController extends Controller
         $type_name = Category::find($request->kategori_produk)->name ?? "";
 
         foreach ($request->file('gambar_produk') as $image) {
-            // Use extension derived from actual MIME type to guarantee .webp when converted
-            $ext = $image->getClientOriginalExtension() ?: $image->extension();
-            $filename = $type_name . '_' . uniqid() . '.' . $ext;
-            $image->storeAs('gambar_produk', $filename, 'public');
+            // Resize & compress gambar ke 1200x1200 max, save as WebP
+            $filename = $type_name . '_' . uniqid() . '.webp';
+            $savePath = storage_path('app/public/gambar_produk/' . $filename);
+            
+            $this->resizeAndSaveWebp($image->getRealPath(), $savePath, 1200, 1200, 82);
+            
             $imagePaths[] = $filename;
         }
 
@@ -174,9 +177,12 @@ class ProductController extends Controller
         
         if ($request->hasFile('gambar_produk')) {
             foreach ($request->file('gambar_produk') as $image) {
-                $ext = $image->getClientOriginalExtension() ?: $image->extension();
-                $filename = $type_name . '_' . uniqid() . '.' . $ext;
-                $image->storeAs('gambar_produk', $filename, 'public');
+                // Resize & compress gambar ke 1200x1200 max, save as WebP
+                $filename = $type_name . '_' . uniqid() . '.webp';
+                $savePath = storage_path('app/public/gambar_produk/' . $filename);
+                
+                $this->resizeAndSaveWebp($image->getRealPath(), $savePath, 1200, 1200, 82);
+                
                 $newImagePaths[] = $filename;
             }
         }
@@ -221,6 +227,73 @@ class ProductController extends Controller
         $product = Product::find($request->product_id);
 
         $product->increment('order_click_count');
+    }
+
+    /**
+     * Resize gambar dan save sebagai WebP dengan kualitas optimal
+     * 
+     * @param string $sourcePath Path file upload
+     * @param string $savePath Path tujuan save
+     * @param int $maxWidth Lebar maksimal (default 1200)
+     * @param int $maxHeight Tinggi maksimal (default 1200)
+     * @param int $quality Kualitas WebP 0-100 (default 82)
+     */
+    private function resizeAndSaveWebp($sourcePath, $savePath, $maxWidth = 1200, $maxHeight = 1200, $quality = 82)
+    {
+        // Deteksi tipe gambar
+        $imageInfo = getimagesize($sourcePath);
+        $mimeType = $imageInfo['mime'];
+
+        // Load gambar berdasarkan tipe
+        switch ($mimeType) {
+            case 'image/jpeg':
+                $image = imagecreatefromjpeg($sourcePath);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($sourcePath);
+                break;
+            case 'image/webp':
+                $image = imagecreatefromwebp($sourcePath);
+                break;
+            default:
+                throw new \Exception('Format gambar tidak didukung');
+        }
+
+        // Dapatkan dimensi asli
+        $originalWidth = imagesx($image);
+        $originalHeight = imagesy($image);
+
+        // Hitung dimensi baru (maintain aspect ratio)
+        $ratio = min($maxWidth / $originalWidth, $maxHeight / $originalHeight);
+        
+        // Jangan perbesar gambar kecil
+        if ($ratio > 1) {
+            $ratio = 1;
+        }
+
+        $newWidth = (int)($originalWidth * $ratio);
+        $newHeight = (int)($originalHeight * $ratio);
+
+        // Buat canvas baru
+        $resized = imagecreatetruecolor($newWidth, $newHeight);
+
+        // Preserve transparency untuk PNG
+        if ($mimeType === 'image/png') {
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+            imagefill($resized, 0, 0, $transparent);
+        }
+
+        // Resize
+        imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+        // Save as WebP
+        imagewebp($resized, $savePath, $quality);
+
+        // Cleanup
+        imagedestroy($image);
+        imagedestroy($resized);
     }
 }
 

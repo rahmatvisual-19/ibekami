@@ -19,21 +19,30 @@ class Controller extends BaseController
     {
         $types    = Type::all();
         $banners  = Banner::all();
-        $partners = Partnership::all();
+        
+        // Batasi logo mitra maksimal 12 (6 BUMN + 6 Organization)
+        $partners = Partnership::take(12)->get();
 
-        $bumnPartner = $partners->where('category', 'BUMN');
-        $orgPartner  = $partners->where('category', 'Organization');
+        $bumnPartner = $partners->where('category', 'BUMN')->take(6);
+        $orgPartner  = $partners->where('category', 'Organization')->take(6);
 
-        $product = Product::where('status', 'Aktif')
-            ->whereNotNull('activated_at')
-            ->orderBy('activated_at', 'desc')
-            ->select('product_id', 'name', 'image_url', 'product_type', 'category_type', 'status', 'activated_at')
-            ->take(24)
-            ->get();
-
+        // Ambil 8 produk terbaru per kategori yang aktif
         $homeCategories = Category::whereHas('products', function ($q) {
             $q->where('status', 'Aktif')->whereNotNull('activated_at');
         })->orderBy('name')->get();
+
+        $product = collect();
+        foreach ($homeCategories as $category) {
+            $categoryProducts = Product::where('status', 'Aktif')
+                ->whereNotNull('activated_at')
+                ->where('category_type', $category->id)
+                ->orderBy('activated_at', 'desc')
+                ->select('product_id', 'name', 'image_url', 'product_type', 'category_type', 'status', 'activated_at')
+                ->take(8)
+                ->get();
+            
+            $product = $product->merge($categoryProducts);
+        }
 
         $testimonies = Review::all()->map(function ($testimony) {
             $testimony->initial       = strtoupper(substr($testimony->name, 0, 1));
