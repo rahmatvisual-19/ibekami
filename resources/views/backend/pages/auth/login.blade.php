@@ -32,7 +32,7 @@
 <br>
 
 <div class="wrapper bg-white">
-        <div class="h2 text-center"> <img src="{{ asset('images/logo/ibeka.png') }}" alt="Logo Ibeka" style="height: 100px;"></div>
+        <div class="h2 text-center"> <img src="{{ asset('images/logo/Logo IBEKAMI.png') }}" alt="Logo Ibeka" style="height: 100px;"></div>
         <div class="h4 text-muted text-center pt-2">
             Login Form
         </div>
