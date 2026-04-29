@@ -45,6 +45,9 @@ class PartnershipController extends Controller
 
         $partners->save();
 
+        // Clear cache setelah tambah partner
+        \App\Helpers\CacheHelper::clearPartnerCache();
+
         session()->flash('success', 'Partner berhasil ditambahkan!');
         
         return redirect('/dashboard/partnership');
@@ -58,6 +61,10 @@ class PartnershipController extends Controller
         {
             $this->deleteImageFile($partnerd->image_url);
             $partnerd->delete();
+            
+            // Clear cache setelah hapus partner
+            \App\Helpers\CacheHelper::clearPartnerCache();
+            
             return redirect('/dashboard/partnership')->with('delete', 'Kamu berhasil menghapus!');
         }
     }
@@ -100,6 +107,9 @@ class PartnershipController extends Controller
         }
 
         $partner->save();
+
+        // Clear cache setelah update partner
+        \App\Helpers\CacheHelper::clearPartnerCache();
 
         session()->flash('success', 'Partner berhasil diperbaharui!');
         

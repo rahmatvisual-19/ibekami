@@ -12,42 +12,61 @@ use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class Controller extends BaseController
 {
     public function home()
     {
-        $types    = Type::all();
-        $banners  = Banner::all();
+        // Cache types - jarang berubah (24 jam)
+        $types = Cache::remember('homepage.types', 60 * 1440, function () {
+            return Type::all();
+        });
+
+        // Cache banners - update manual via admin (12 jam)
+        $banners = Cache::remember('homepage.banners', 60 * 720, function () {
+            return Banner::all();
+        });
         
-        // Batasi logo mitra maksimal 12 (6 BUMN + 6 Organization)
-        $partners = Partnership::take(12)->get();
+        // Cache partners - maksimal 12 logo (24 jam)
+        $partners = Cache::remember('homepage.partners', 60 * 1440, function () {
+            return Partnership::take(12)->get();
+        });
 
         $bumnPartner = $partners->where('category', 'BUMN')->take(6);
         $orgPartner  = $partners->where('category', 'Organization')->take(6);
 
-        // Ambil 8 produk terbaru per kategori yang aktif
-        $homeCategories = Category::whereHas('products', function ($q) {
-            $q->where('status', 'Aktif')->whereNotNull('activated_at');
-        })->orderBy('name')->get();
+        // Cache categories yang punya produk aktif (6 jam)
+        $homeCategories = Cache::remember('homepage.categories', 60 * 360, function () {
+            return Category::whereHas('products', function ($q) {
+                $q->where('status', 'Aktif')->whereNotNull('activated_at');
+            })->orderBy('name')->get();
+        });
 
-        $product = collect();
-        foreach ($homeCategories as $category) {
-            $categoryProducts = Product::where('status', 'Aktif')
-                ->whereNotNull('activated_at')
-                ->where('category_type', $category->id)
-                ->orderBy('activated_at', 'desc')
-                ->select('product_id', 'name', 'image_url', 'product_type', 'category_type', 'status', 'activated_at')
-                ->take(8)
-                ->get();
-            
-            $product = $product->merge($categoryProducts);
-        }
+        // Cache products - 8 per kategori (3 jam)
+        $product = Cache::remember('homepage.products', 60 * 180, function () use ($homeCategories) {
+            $products = collect();
+            foreach ($homeCategories as $category) {
+                $categoryProducts = Product::where('status', 'Aktif')
+                    ->whereNotNull('activated_at')
+                    ->where('category_type', $category->id)
+                    ->orderBy('activated_at', 'desc')
+                    ->select('product_id', 'name', 'image_url', 'product_type', 'category_type', 'status', 'activated_at')
+                    ->take(8)
+                    ->get();
+                
+                $products = $products->merge($categoryProducts);
+            }
+            return $products;
+        });
 
-        $testimonies = Review::all()->map(function ($testimony) {
-            $testimony->initial       = strtoupper(substr($testimony->name, 0, 1));
-            $testimony->formattedDate = \Illuminate\Support\Carbon::parse($testimony->review_date)->diffForHumans();
-            return $testimony;
+        // Cache testimonies (12 jam)
+        $testimonies = Cache::remember('homepage.testimonies', 60 * 720, function () {
+            return Review::all()->map(function ($testimony) {
+                $testimony->initial       = strtoupper(substr($testimony->name, 0, 1));
+                $testimony->formattedDate = \Illuminate\Support\Carbon::parse($testimony->review_date)->diffForHumans();
+                return $testimony;
+            });
         });
 
         return view('home', compact('product', 'types', 'testimonies', 'banners', 'bumnPartner', 'orgPartner', 'homeCategories'));

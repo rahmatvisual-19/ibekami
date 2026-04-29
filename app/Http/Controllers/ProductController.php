@@ -85,6 +85,9 @@ class ProductController extends Controller
             'activated_at'  => $request->status === 'Aktif' ? now() : null,
         ]);
 
+        // Clear cache setelah tambah produk baru
+        \App\Helpers\CacheHelper::clearProductCache();
+
         session()->flash('success', 'Daftar barang berhasil ditambahkan!');
         return redirect('dashboard/daftar-product');
     }
@@ -108,6 +111,10 @@ class ProductController extends Controller
         }
 
         $product->delete();
+        
+        // Clear cache setelah hapus produk
+        \App\Helpers\CacheHelper::clearProductCache();
+        
         return redirect('dashboard/daftar-product')->with('delete', 'Kamu berhasil menghapus!');
     }
 
@@ -189,6 +196,9 @@ class ProductController extends Controller
 
         $product->image_url = array_merge($remainingImages, $newImagePaths);
         $product->save();
+
+        // Clear cache setelah update produk
+        \App\Helpers\CacheHelper::clearProductCache();
 
         session()->flash('success', 'Daftar barang berhasil diedit !');
         return redirect('dashboard/daftar-product');
